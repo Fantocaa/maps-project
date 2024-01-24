@@ -5,18 +5,21 @@ import $ from "jquery";
 import { Head } from "@inertiajs/vue3";
 import { router } from "@inertiajs/vue3";
 import { Link } from "@inertiajs/vue3";
+import axios from "axios";
 
 export default defineComponent({
     emits: ["position_changed", "tilt_changed"],
     components: { Marker, Head, Link },
     props: { auth: Object },
-    setup() {
+    setup(props) {
         const center = ref({ lat: 0, lng: 0 });
         const markers = ref([]);
         const klikmarker = ref([]);
         const selectedMarker = ref(true);
         const mapInstance = ref(null);
         const address = ref("");
+
+        // console.log(props.auth.user.name);
 
         const getCurrentLocation = () => {
             if (markers.value.length > 0) {
@@ -205,6 +208,7 @@ export default defineComponent({
                         notes: formInput.value.notes,
                         lat: lastMarker.position.lat,
                         lng: lastMarker.position.lng,
+                        name: props.auth.user.name,
                     };
 
                     // Menggunakan Ajax jQuery untuk mengirim data
@@ -393,7 +397,7 @@ export default defineComponent({
                         {{ auth.user.name }}
                     </p>
                     <p>
-                        Login Sebagai :
+                        Login Dengan Email:
                         {{ auth.user.email }}
                     </p>
                     <div class="flex justify-center gap-4">

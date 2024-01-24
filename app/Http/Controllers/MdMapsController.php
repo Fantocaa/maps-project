@@ -5,9 +5,11 @@ namespace App\Http\Controllers;
 use App\Models\md_maps;
 use App\Http\Requests\Storemd_mapsRequest;
 use App\Http\Requests\Updatemd_mapsRequest;
+use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
+
 
 class MdMapsController extends Controller
 {
@@ -23,6 +25,24 @@ class MdMapsController extends Controller
 
         // Mengembalikan data dalam format JSON
         return response()->json($maps);
+
+        // $maps = md_maps::join('model_has_roles', 'md_maps.id', '=', 'model_has_roles.model_id')
+        //     ->join('roles', 'model_has_roles.role_id', '=', 'roles.id')
+        //     ->select('md_maps.*', 'roles.name as role_name')
+        //     ->get();
+
+        // $users = User::join('roles', 'users.role_id', '=', 'roles.id')
+        //     ->select('users.*', 'roles.name as role_name')
+        //     ->get();
+
+        // // Menggabungkan data maps dan users menjadi satu array
+        // $data = [
+        //     'maps' => $maps,
+        //     'users' => $users
+        // ];
+
+        // // Mengembalikan data dalam format JSON
+        // return response()->json($data);
     }
 
     /**
@@ -42,8 +62,8 @@ class MdMapsController extends Controller
         $form->notes = $request->notes;
         $form->lat = $request->lat;
         $form->lng = $request->lng;
-        $form->name = Auth::user()->name;
-        $form->date = Carbon::now();
+        $form->name = $request->name;
+        // $form->date = Carbon::now()->date;
         $form->save();
     }
 
