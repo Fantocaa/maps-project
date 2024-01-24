@@ -44,6 +44,9 @@ class RegisteredUserController extends Controller
             'role' => 'user', // Set role to 'user' for every new user
         ]);
 
+        // Set role to 'user' for every new user
+        $user->assignRole('user');
+
         event(new Registered($user));
 
         Auth::login($user);

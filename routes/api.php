@@ -25,4 +25,6 @@ Route::middleware([])->group(function () {
     Route::post('/maps/edit/{id}/', [MdMapsController::class, 'update_maps'])->name('update_form_maps');
 
     Route::delete('/maps/delete/{id}/', [MdMapsController::class, 'delete_maps'])->name('delete_form_maps');
+
+    Route::get('/role', [MdMapsController::class, 'has_role'])->name('has_role');
 });

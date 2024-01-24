@@ -18,8 +18,9 @@ export default defineComponent({
         const selectedMarker = ref(true);
         const mapInstance = ref(null);
         const address = ref("");
+        const user = ref([]);
 
-        // console.log(props.auth.user.name);
+        console.log(props.auth.user);
 
         const getCurrentLocation = () => {
             if (markers.value.length > 0) {
@@ -193,6 +194,20 @@ export default defineComponent({
             }
         };
 
+        const fetchUser = async () => {
+            try {
+                const response = await axios.get("/api/role");
+                const data = response.data;
+                user.value = data.map((user) => ({
+                    role_names: user.role_names,
+                }));
+
+                console.log(user.value);
+            } catch (error) {
+                console.error("Error fetching data:", error);
+            }
+        };
+
         const saveFormData = () => {
             // lat: markers.value[markers.value.length - 1].position.lat,
             // lng: markers.value[markers.value.length - 1].position.lng,
@@ -347,11 +362,13 @@ export default defineComponent({
             fetchData();
             getCurrentLocation();
             getReverseGeocoding();
+            fetchUser();
             // handleMarkerClick();
             // $("#showmarker").hide();
         });
 
         return {
+            user,
             zoom,
             center,
             logout,
@@ -361,13 +378,11 @@ export default defineComponent({
             formInput,
             closeModal,
             klikmarker,
-
             handleMapClick,
             handleMarkerClick,
             deleteSaveFormData,
             editSaveFormData,
             closeShowMarker,
-
             selectedMarker,
             mapWasMounted,
             saveFormData,
@@ -522,42 +537,21 @@ export default defineComponent({
                         <h1 class="pb-4">Alamat : {{ address }}</h1>
 
                         <label for="notes">Description:</label>
-                        <!-- Textarea for 'user' role, disabled -->
-                        <textarea
-                            v-if="auth.user.role === 'user'"
-                            id="notes"
-                            class="w-full mb-2 p-2 border"
-                            disabled
-                        >
-                            {{ selectedMarker ? selectedMarker.notes : "" }}
-                        </textarea>
 
                         <!-- Textarea for other roles, enabled -->
-                        <textarea
-                            v-else
-                            id="notes"
-                            class="w-full mb-2 p-2 border"
+                        <textarea id="notes" class="w-full mb-2 p-2 border">
+                                {{ selectedMarker ? selectedMarker.notes : "" }}
+                            </textarea
                         >
-                            {{ selectedMarker ? selectedMarker.notes : "" }}
-                        </textarea>
 
                         <div class="flex gap-4 justify-center">
                             <button
-                                v-if="
-                                    auth.user.role === 'superuser' ||
-                                    auth.user.role === 'admin' ||
-                                    auth.user.role === 'superadmin'
-                                "
                                 type="submit"
                                 class="bg-blue-500 text-white py-2 px-4 rounded-md"
                             >
                                 Save
                             </button>
                             <button
-                                v-if="
-                                    auth.user.role === 'admin' ||
-                                    auth.user.role === 'superadmin'
-                                "
                                 @click="deleteSaveFormData"
                                 type="button"
                                 class="bg-red-500 text-white py-2 px-4 rounded-md"

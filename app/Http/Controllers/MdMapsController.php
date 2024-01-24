@@ -18,31 +18,16 @@ class MdMapsController extends Controller
      */
     public function index()
     {
-        $maps = md_maps::join('model_has_roles', 'md_maps.id', '=', 'model_has_roles.model_id')
-            ->join('roles', 'model_has_roles.role_id', '=', 'roles.id')
-            ->select('md_maps.*', 'roles.name as role_name')
-            ->get();
-
-        // Mengembalikan data dalam format JSON
-        return response()->json($maps);
-
         // $maps = md_maps::join('model_has_roles', 'md_maps.id', '=', 'model_has_roles.model_id')
         //     ->join('roles', 'model_has_roles.role_id', '=', 'roles.id')
         //     ->select('md_maps.*', 'roles.name as role_name')
         //     ->get();
 
-        // $users = User::join('roles', 'users.role_id', '=', 'roles.id')
-        //     ->select('users.*', 'roles.name as role_name')
-        //     ->get();
-
-        // // Menggabungkan data maps dan users menjadi satu array
-        // $data = [
-        //     'maps' => $maps,
-        //     'users' => $users
-        // ];
-
         // // Mengembalikan data dalam format JSON
-        // return response()->json($data);
+        // return response()->json($maps);
+
+        $maps = md_maps::all();
+        return response()->json($maps);
     }
 
     /**
@@ -51,6 +36,19 @@ class MdMapsController extends Controller
     public function create()
     {
         //
+    }
+
+    public function has_role()
+    {
+        $users = User::all();
+
+        // Mengubah setiap user menjadi array dan menambahkan properti role_names
+        $users = $users->map(function ($user) {
+            return array_merge($user->toArray(), ['role_names' => $user->role_names]);
+        });
+
+        // Mengembalikan data dalam format JSON
+        return response()->json($users);
     }
 
     /**
