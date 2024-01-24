@@ -81,6 +81,33 @@ export default defineComponent({
             notes: "",
         });
 
+        const handleMapClick = (event) => {
+            const clickedPosition = {
+                lat: event.latLng.lat(),
+                lng: event.latLng.lng(),
+            };
+
+            // Panggil fungsi reverse geocoding dengan latitude dan longitude
+            getReverseGeocoding(clickedPosition.lat, clickedPosition.lng)
+                .then((receivedAddress) => {
+                    if (receivedAddress) {
+                        address.value = receivedAddress; // Update the address variable with the received address
+                    }
+                })
+                .catch((error) => console.error(error));
+
+            markers.value.push({
+                position: clickedPosition,
+                label: "",
+                title: "New Marker",
+                showForm: true,
+            });
+
+            center.value = clickedPosition;
+            klikmarker.value = [];
+            $("#showmarker").hide();
+        };
+
         const mapWasMounted = (_map) => {
             mapInstance.value = _map;
         };
@@ -164,81 +191,78 @@ export default defineComponent({
             }
         };
 
-        // const saveFormData = () => {
-        //     // lat: markers.value[markers.value.length - 1].position.lat,
-        //     // lng: markers.value[markers.value.length - 1].position.lng,
-        //     if (markers.value.length > 0) {
-        //         const lastMarker = markers.value[markers.value.length - 1];
+        const saveFormData = () => {
+            if (markers.value.length > 0) {
+                const lastMarker = markers.value[markers.value.length - 1];
 
-        //         if (
-        //             lastMarker.position &&
-        //             lastMarker.position.lat &&
-        //             lastMarker.position.lng
-        //         ) {
-        //             const formData = {
-        //                 notes: formInput.value.notes,
-        //                 lat: lastMarker.position.lat,
-        //                 lng: lastMarker.position.lng,
-        //                 name: props.auth.user.name,
-        //             };
+                if (
+                    lastMarker.position &&
+                    lastMarker.position.lat &&
+                    lastMarker.position.lng
+                ) {
+                    const formData = {
+                        notes: formInput.value.notes,
+                        lat: lastMarker.position.lat,
+                        lng: lastMarker.position.lng,
+                        name: props.auth.user.name,
+                    };
 
-        //             // Menggunakan Ajax jQuery untuk mengirim data
-        //             $.ajax({
-        //                 url: "/api/maps",
-        //                 type: "POST",
-        //                 contentType: "application/json",
-        //                 data: JSON.stringify(formData),
-        //                 success: function (data) {
-        //                     alert("Data saved : Success", data);
+                    // Menggunakan Ajax jQuery untuk mengirim data
+                    $.ajax({
+                        url: "/api/maps",
+                        type: "POST",
+                        contentType: "application/json",
+                        data: JSON.stringify(formData),
+                        success: function (data) {
+                            alert("Data saved : Success", data);
 
-        //                     markers.value[
-        //                         markers.value.length - 1
-        //                     ].showForm = false;
-        //                     formInput.value = {
-        //                         notes: "",
-        //                     };
-        //                     fetchData();
-        //                 },
-        //                 error: function (error) {
-        //                     console.error("Error saving data:", error);
-        //                 },
-        //             });
-        //         } else {
-        //             console.error("Error: Marker position data is incomplete");
-        //         }
-        //     } else {
-        //         console.error("Error: No markers available to save");
-        //     }
-        // };
+                            markers.value[
+                                markers.value.length - 1
+                            ].showForm = false;
+                            formInput.value = {
+                                notes: "",
+                            };
+                            fetchData();
+                        },
+                        error: function (error) {
+                            console.error("Error saving data:", error);
+                        },
+                    });
+                } else {
+                    console.error("Error: Marker position data is incomplete");
+                }
+            } else {
+                console.error("Error: No markers available to save");
+            }
+        };
 
-        // const editSaveFormData = () => {
-        //     var no = $("#notes").val();
-        //     if (selectedMarker.value && selectedMarker.value.id) {
-        //         const formData = {
-        //             notes: no,
-        //         };
-        //         console.log("formInput:", formInput.value); // Log formInput to the console
+        const editSaveFormData = () => {
+            var no = $("#notes").val();
+            if (selectedMarker.value && selectedMarker.value.id) {
+                const formData = {
+                    notes: no,
+                };
 
-        //         $.ajax({
-        //             url: `/api/maps/edit/${selectedMarker.value.id}`,
-        //             type: "POST",
-        //             contentType: "application/json",
-        //             data: JSON.stringify(formData),
-        //             success: function (data) {
-        //                 alert("Data saved : Success", data);
-        //                 // Update the notes of the selectedMarker directly
-        //                 selectedMarker.value.notes = formInput.notes;
-        //                 $("#showmarker").hide();
-        //                 fetchData();
-        //             },
-        //             error: function (error) {
-        //                 console.error("Error saving data:", error);
-        //             },
-        //         });
-        //     } else {
-        //         console.error("Error: No marker selected for editing");
-        //     }
-        // };
+                $.ajax({
+                    url: `/api/maps/edit/${selectedMarker.value.id}`,
+                    type: "POST",
+                    contentType: "application/json",
+                    data: JSON.stringify(formData),
+                    success: function (data) {
+                        alert("Data saved : Success", data);
+                        // Update the notes of the selectedMarker directly
+                        selectedMarker.value.notes = formInput.notes;
+                        $("#showmarker").hide();
+                        fetchData();
+                    },
+                    error: function (error) {
+                        console.error("Error saving data:", error);
+                    },
+                });
+            } else {
+                console.error("Error: No marker selected for editing");
+            }
+        };
 
         // const deleteSaveFormData = () => {
         //     if (selectedMarker.value && selectedMarker.value.id) {
@@ -336,14 +360,14 @@ export default defineComponent({
             formInput,
             closeModal,
             klikmarker,
-            // handleMapClick,
+            handleMapClick,
             handleMarkerClick,
             // deleteSaveFormData,
-            // editSaveFormData,
+            editSaveFormData,
             closeShowMarker,
             selectedMarker,
             mapWasMounted,
-            // saveFormData,
+            saveFormData,
         };
     },
 });
@@ -428,6 +452,7 @@ export default defineComponent({
             :center="center"
             :zoom="zoom"
             @load="mapWasMounted"
+            @click="handleMapClick"
         >
             <GMapMarker
                 :clickable="true"
@@ -446,10 +471,11 @@ export default defineComponent({
                 </GMapAutocomplete>
             </div>
             <div class="absolute right-8 top-0"></div>
-            <!-- <div
+            <div
                 v-if="markers.length && markers[markers.length - 1].showForm"
                 class="absolute z-10 inset-1/2 transform translate-x-8 -translate-y-40"
             >
+                <!-- Tambahkan kelas bg-white pada div untuk memberikan latar belakang putih -->
                 <div class="bg-white w-72 h-auto rounded-md p-8 relative">
                     <form @submit.prevent="saveFormData">
                         <label for="notes">Description:</label>
@@ -478,7 +504,7 @@ export default defineComponent({
                         </button>
                     </div>
                 </div>
-            </div> -->
+            </div>
             <div
                 v-if="selectedMarker"
                 id="showmarker"
@@ -495,25 +521,26 @@ export default defineComponent({
                         <label for="notes">Description:</label>
 
                         <!-- Textarea for other roles, enabled -->
-                        <h1 id="notes" class="w-full mb-2 p-2 border">
-                            {{ selectedMarker ? selectedMarker.notes : "" }}
-                        </h1>
+                        <textarea id="notes" class="w-full mb-2 p-2 border">
+                                {{ selectedMarker ? selectedMarker.notes : "" }}
+                            </textarea
+                        >
 
-                        <!-- <div class="flex gap-4 justify-center">
+                        <div class="flex gap-4 justify-center">
                             <button
                                 type="submit"
                                 class="bg-blue-500 text-white py-2 px-4 rounded-md"
                             >
                                 Save
                             </button>
-                            <button
+                            <!-- <button
                                 @click="deleteSaveFormData"
                                 type="button"
                                 class="bg-red-500 text-white py-2 px-4 rounded-md"
                             >
                                 Delete
-                            </button>
-                        </div> -->
+                            </button> -->
+                        </div>
                         <div>
                             <h1>Dibuat oleh : {{ selectedMarker.name }}</h1>
                             <span>Dibuat pada : {{ selectedMarker.date }}</span>

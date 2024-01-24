@@ -1,10 +1,10 @@
 <script setup>
-import PerfectScrollbar from '@/Components/PerfectScrollbar.vue'
-import SidebarLink from '@/Components/Sidebar/SidebarLink.vue'
-import { DashboardIcon } from '@/Components/Icons/outline'
-import SidebarCollapsible from '@/Components/Sidebar/SidebarCollapsible.vue'
-import SidebarCollapsibleItem from '@/Components/Sidebar/SidebarCollapsibleItem.vue'
-import { TemplateIcon } from '@heroicons/vue/outline'
+import PerfectScrollbar from "@/Components/PerfectScrollbar.vue";
+import SidebarLink from "@/Components/Sidebar/SidebarLink.vue";
+import { DashboardIcon } from "@/Components/Icons/outline";
+import SidebarCollapsible from "@/Components/Sidebar/SidebarCollapsible.vue";
+import SidebarCollapsibleItem from "@/Components/Sidebar/SidebarCollapsibleItem.vue";
+import { TemplateIcon } from "@heroicons/vue/outline";
 </script>
 
 <template>
@@ -27,7 +27,7 @@ import { TemplateIcon } from '@heroicons/vue/outline'
         </SidebarLink>
 
         <SidebarCollapsible
-            title="Components"
+            title="Manage"
             :active="route().current('components.*')"
         >
             <template #icon>
@@ -38,8 +38,13 @@ import { TemplateIcon } from '@heroicons/vue/outline'
             </template>
 
             <SidebarCollapsibleItem
+                :href="route('manage.user')"
+                title="Manage User"
+                :active="route().current('manage.user')"
+            />
+            <SidebarCollapsibleItem
                 :href="route('components.buttons')"
-                title="Buttons"
+                title="Manage Company"
                 :active="route().current('components.buttons')"
             />
         </SidebarCollapsible>

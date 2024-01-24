@@ -1,20 +1,20 @@
 <script setup>
-import { onMounted } from 'vue'
-import { router } from '@inertiajs/vue3'
-import { sidebarState } from '@/Composables'
-import SidebarHeader from '@/Components/Sidebar/SidebarHeader.vue'
-import SidebarContent from '@/Components/Sidebar/SidebarContent.vue'
-import SidebarFooter from '@/Components/Sidebar/SidebarFooter.vue'
+import { onMounted } from "vue";
+import { router } from "@inertiajs/vue3";
+import { sidebarState } from "@/Composables";
+import SidebarHeader from "@/Components/Sidebar/SidebarHeader.vue";
+import SidebarContent from "@/Components/Sidebar/SidebarContent.vue";
+import SidebarFooter from "@/Components/Sidebar/SidebarFooter.vue";
 
 onMounted(() => {
-    window.addEventListener('resize', sidebarState.handleWindowResize)
+    window.addEventListener("resize", sidebarState.handleWindowResize);
 
-    router.on('navigate', () => {
+    router.on("navigate", () => {
         if (window.innerWidth <= 1024) {
-            sidebarState.isOpen = false
+            sidebarState.isOpen = false;
         }
-    })
-})
+    });
+});
 </script>
 
 <template>

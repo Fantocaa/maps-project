@@ -24,7 +24,7 @@ import { GithubIcon } from "@/Components/Icons/brands";
                 variant="black"
                 class="items-center gap-2 max-w-xs"
                 v-slot="{ iconSizeClasses }"
-                href="/maps"
+                href="/login"
             >
                 <span>Kembali ke Laman</span>
             </Button>

@@ -19,6 +19,12 @@ class RegisteredUserController extends Controller
     /**
      * Display the registration view.
      */
+
+    public function __construct()
+    {
+        $this->middleware('role:superadmin')->only(['create', 'store']);
+    }
+
     public function create(): Response
     {
         return Inertia::render('Auth/Register');
@@ -49,8 +55,8 @@ class RegisteredUserController extends Controller
 
         event(new Registered($user));
 
-        Auth::login($user);
+        // Auth::login($user);
 
-        return redirect(RouteServiceProvider::HOME);
+        return redirect(RouteServiceProvider::MANAGE_USER);
     }
 }

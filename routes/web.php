@@ -4,6 +4,7 @@ use Inertia\Inertia;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Foundation\Application;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\RegisterUserController;
 use Illuminate\Support\Facades\Auth;
 
 /*
@@ -20,20 +21,25 @@ use Illuminate\Support\Facades\Auth;
 Route::get('/', function () {
     if (Auth::check()) {
         // The user is logged in, redirect them to the desired page
-        return redirect('maps/user');
+        return redirect('/login');
     } else {
         return Inertia::render('Welcome', [
             'canLogin' => Route::has('login'),
-            'canRegister' => Route::has('register'),
+            // 'canRegister' => Route::has('register'),
             'laravelVersion' => Application::VERSION,
             'phpVersion' => PHP_VERSION,
         ]);
     }
 });
 
+// Route::get('/register', function () {
+// })->middleware(['auth', 'verified', 'role:superadmin']);
+
+// Route::get('/registeruser', [RegisterUserController::class, 'create'])->name('registeruser')->middleware(['auth', 'verified', 'role:superadmin']);
+
 Route::get('/dashboard', function () {
     return Inertia::render('Dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+})->middleware(['auth', 'verified', 'role:superadmin'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -45,6 +51,10 @@ Route::get('/components/buttons', function () {
     return Inertia::render('Components/Buttons');
 })->middleware(['auth', 'verified'])->name('components.buttons');
 
+Route::get('/manage/user', function () {
+    return Inertia::render('Components/Register');
+})->middleware(['auth', 'verified'])->name('manage.user');
+
 //Maps Route
 
 Route::get('/maps', function () {
@@ -52,19 +62,15 @@ Route::get('/maps', function () {
 
 Route::get('/maps/user', function () {
     return Inertia::render('Maps/MapsUser');
-})->middleware(['auth', 'verified'])->name('maps');
+})->middleware(['auth', 'verified', 'role:user|superuser|admin|superadmin'])->name('mapsUser');
 
-// Route::get('/maps/superuser', function () {
-//     return Inertia::render('Maps/MapsSuperUser');
-// })->middleware(['auth', 'verified', 'role:superuser'])->name('mapsSuperUser');
+Route::get('/maps/superuser', function () {
+    return Inertia::render('Maps/MapsSuperUser');
+})->middleware(['auth', 'verified', 'role:superuser|admin|superadmin'])->name('mapsSuperUser');
 
-// Route::get('/maps/admin', function () {
-//     return Inertia::render('Maps/MapsAdmin');
-// })->middleware(['auth', 'verified', 'role:admin | superadmin'])->name('mapsAdmin');
-
-// Route::get('/maps/superAdmin', function () {
-//     return Inertia::render('Maps/MapsSuperAdmin');
-// })->middleware(['auth', 'verified', 'role:superadmin'])->name('mapsSuperAdmin');
+Route::get('/maps/admin', function () {
+    return Inertia::render('Maps/MapsAdmin');
+})->middleware(['auth', 'verified', 'role:admin|superadmin'])->name('mapsAdmin');
 
 
 require __DIR__ . '/auth.php';

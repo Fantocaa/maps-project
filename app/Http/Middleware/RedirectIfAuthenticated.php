@@ -24,10 +24,14 @@ class RedirectIfAuthenticated
 
                 $user = Auth::user();
 
+                if ($request->path() == 'register' && $user->hasRole('superadmin')) {
+                    return $next($request);
+                }
+
                 if ($user->hasRole('admin')) {
-                    return redirect('/maps/admin');
+                    return redirect('/maps/user');
                 } else if ($user->hasRole('superuser')) {
-                    return redirect('/maps/superuser');
+                    return redirect('/maps/user');
                 } else if ($user->hasRole('user')) {
                     return redirect('/maps/user');
                 } else
