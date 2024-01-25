@@ -164,105 +164,6 @@ export default defineComponent({
             }
         };
 
-        // const saveFormData = () => {
-        //     // lat: markers.value[markers.value.length - 1].position.lat,
-        //     // lng: markers.value[markers.value.length - 1].position.lng,
-        //     if (markers.value.length > 0) {
-        //         const lastMarker = markers.value[markers.value.length - 1];
-
-        //         if (
-        //             lastMarker.position &&
-        //             lastMarker.position.lat &&
-        //             lastMarker.position.lng
-        //         ) {
-        //             const formData = {
-        //                 notes: formInput.value.notes,
-        //                 lat: lastMarker.position.lat,
-        //                 lng: lastMarker.position.lng,
-        //                 name: props.auth.user.name,
-        //             };
-
-        //             // Menggunakan Ajax jQuery untuk mengirim data
-        //             $.ajax({
-        //                 url: "/api/maps",
-        //                 type: "POST",
-        //                 contentType: "application/json",
-        //                 data: JSON.stringify(formData),
-        //                 success: function (data) {
-        //                     alert("Data saved : Success", data);
-
-        //                     markers.value[
-        //                         markers.value.length - 1
-        //                     ].showForm = false;
-        //                     formInput.value = {
-        //                         notes: "",
-        //                     };
-        //                     fetchData();
-        //                 },
-        //                 error: function (error) {
-        //                     console.error("Error saving data:", error);
-        //                 },
-        //             });
-        //         } else {
-        //             console.error("Error: Marker position data is incomplete");
-        //         }
-        //     } else {
-        //         console.error("Error: No markers available to save");
-        //     }
-        // };
-
-        // const editSaveFormData = () => {
-        //     var no = $("#notes").val();
-        //     if (selectedMarker.value && selectedMarker.value.id) {
-        //         const formData = {
-        //             notes: no,
-        //         };
-        //         console.log("formInput:", formInput.value); // Log formInput to the console
-
-        //         $.ajax({
-        //             url: `/api/maps/edit/${selectedMarker.value.id}`,
-        //             type: "POST",
-        //             contentType: "application/json",
-        //             data: JSON.stringify(formData),
-        //             success: function (data) {
-        //                 alert("Data saved : Success", data);
-        //                 // Update the notes of the selectedMarker directly
-        //                 selectedMarker.value.notes = formInput.notes;
-        //                 $("#showmarker").hide();
-        //                 fetchData();
-        //             },
-        //             error: function (error) {
-        //                 console.error("Error saving data:", error);
-        //             },
-        //         });
-        //     } else {
-        //         console.error("Error: No marker selected for editing");
-        //     }
-        // };
-
-        // const deleteSaveFormData = () => {
-        //     if (selectedMarker.value && selectedMarker.value.id) {
-        //         $.ajax({
-        //             url: `/api/maps/delete/${selectedMarker.value.id}`,
-        //             type: "DELETE",
-        //             success: function (data) {
-        //                 alert("Data deleted : Success", data);
-        //                 const index = markers.value.findIndex(
-        //                     (marker) => marker.id === selectedMarker.value.id
-        //                 );
-        //                 markers.value.splice(index, 1);
-        //                 $("#showmarker").hide();
-        //                 fetchData();
-        //             },
-        //             error: function (error) {
-        //                 console.error("Error deleting data:", error);
-        //             },
-        //         });
-        //     } else {
-        //         console.error("Error: No marker selected for deletion");
-        //     }
-        // };
-
         const zoom = ref(7); // Atur level zoom awal
 
         const setPlace = (place) => {
@@ -336,14 +237,10 @@ export default defineComponent({
             formInput,
             closeModal,
             klikmarker,
-            // handleMapClick,
             handleMarkerClick,
-            // deleteSaveFormData,
-            // editSaveFormData,
             closeShowMarker,
             selectedMarker,
             mapWasMounted,
-            // saveFormData,
         };
     },
 });
@@ -352,81 +249,13 @@ export default defineComponent({
 <template>
     <Head title="Maps" />
     <div class="mx-auto relative">
-        <div class="absolute top-2 left-48 z-10">
-            <!-- Open the modal using ID.showModal() method -->
-            <button
-                class="btn bg-white border-none hover:bg-slate-200 text-base"
-                onclick="my_modal_2.showModal()"
-            >
-                Information
-            </button>
-            <dialog id="my_modal_2" class="modal">
-                <div class="modal-box bg-white">
-                    <h1 class="text-xl font-semibold pb-2">Informasi Akun</h1>
-                    <!-- <p>{{ center.lat }} Latitude, {{ center.lng }} Longitude</p> -->
-                    <br />
-                    <p>
-                        Login Sebagai :
-                        {{ auth.user.name }}
-                    </p>
-                    <p>
-                        Login Dengan Email:
-                        {{ auth.user.email }}
-                    </p>
-                    <div class="flex justify-center gap-4">
-                        <!-- <Link href="/dashboard">
-                            <button
-                                class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-8 rounded z-40 mt-8"
-                            >
-                                Dashboard
-                            </button>
-                        </Link> -->
-                        <button
-                            class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-8 rounded z-40 mt-8"
-                            onclick="logout_button.showModal()"
-                        >
-                            Logout
-                        </button>
-                    </div>
-                    <dialog id="logout_button" class="modal">
-                        <div
-                            class="modal-box bg-white flex gap-4 flex-col justify-center mx-auto"
-                        >
-                            <h1 class="text-xl font-semibold">
-                                Kamu yakin ingin Log Out?
-                            </h1>
-                            <div class="flex gap-4 justify-center mt-8">
-                                <button
-                                    @click="logout"
-                                    :href="route('logout')"
-                                    method="post"
-                                    as="button"
-                                    class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded z-40"
-                                >
-                                    Ya
-                                </button>
-                                <button
-                                    class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded z-40 modal-backdrop"
-                                    @click="closeModal"
-                                >
-                                    Tidak
-                                </button>
-                            </div>
-                        </div>
-                    </dialog>
-                </div>
-                <form method="dialog" class="modal-backdrop">
-                    <button>close</button>
-                </form>
-            </dialog>
-        </div>
-
         <GMapMap
             api-key="AIzaSyD2dASx5Zo68GSyZuPjUs-4SBLYGsn4OPQ"
             id="google-map"
             style="width: 100%; height: 100vh"
             :center="center"
             :zoom="zoom"
+            :options="{ disableDefaultUI: true }"
             @load="mapWasMounted"
         >
             <GMapMarker
@@ -434,87 +263,136 @@ export default defineComponent({
                 v-for="marker in markers"
                 :key="marker.position.lat + marker.position.lng"
                 :options="marker"
+                onclick="showmarker.showModal()"
                 @click="() => handleMarkerClick(marker)"
             />
             <!-- Menampilkan semua marker dalam array markers -->
-            <div class="absolute right-16 top-[9px]">
-                <GMapAutocomplete
-                    placeholder="Search"
-                    @place_changed="setPlace"
-                    class="px-4 py-2 w-[512px] border rounded-md focus:outline-none focus:ring focus:border-blue-300 shadow-xl border-none"
-                >
-                </GMapAutocomplete>
-            </div>
-            <div class="absolute right-8 top-0"></div>
-            <!-- <div
-                v-if="markers.length && markers[markers.length - 1].showForm"
-                class="absolute z-10 inset-1/2 transform translate-x-8 -translate-y-40"
-            >
-                <div class="bg-white w-72 h-auto rounded-md p-8 relative">
-                    <form @submit.prevent="saveFormData">
-                        <label for="notes">Description:</label>
-                        <h1>{{ address }}</h1>
-                        <textarea
-                            v-model="formInput.notes"
-                            id="notes"
-                            class="w-full mb-2 p-2 border focus:outline-none focus:ring focus:border-blue-300"
-                        ></textarea>
 
-                        <div class="flex gap-4 justify-center">
-                            <button
-                                type="submit"
-                                class="bg-blue-500 text-white py-2 px-4 rounded-md"
-                            >
-                                Save
-                            </button>
-                        </div>
-                    </form>
-                    <div class="absolute top-0 right-1">
-                        <button
-                            @click="closeShowMarker"
-                            class="absolute top-2 right-2 text-red-500 hover:text-red-700 cursor-pointer"
+            <div class="">
+                <div class="absolute top-4 md:top-4 w-full px-2 md:px-8">
+                    <div class="relative">
+                        <img
+                            src="/images/icon/search.svg"
+                            alt="search"
+                            class="absolute left-5 top-1/2 transform -translate-y-1/2"
+                        />
+                        <GMapAutocomplete
+                            placeholder="Cari Lokasi"
+                            @place_changed="setPlace"
+                            class="px-4 py-4 md:py-4 w-full md:w-[576px] xl:w-[800px] border rounded-full focus:outline-none focus:ring focus:border-blue-300 shadow-xl border-none pl-14 text-lg"
                         >
-                            X
-                        </button>
+                        </GMapAutocomplete>
                     </div>
                 </div>
-            </div> -->
+
+                <div
+                    class="absolute bottom-8 right-2 md:bottom-0 md:top-6 md:right-8 z-10"
+                >
+                    <!-- Open the modal using ID.showModal() method -->
+                    <button
+                        class="bg-red-600 border-none text-white hover:bg-slate-200 text-base pl-10 relative rounded-full btn shadow-xl"
+                        onclick="my_modal_2.showModal()"
+                    >
+                        <img
+                            src="/images/icon/user.svg"
+                            alt="User"
+                            class="absolute left-3 top-1/2 transform -translate-y-1/2"
+                        />
+                        Akun
+                    </button>
+                    <dialog id="my_modal_2" class="modal">
+                        <div class="modal-box bg-white">
+                            <h1 class="text-xl font-semibold pb-2">
+                                Informasi Akun
+                            </h1>
+                            <!-- <p>
+                                {{ center.lat }} Latitude,
+                                {{ center.lng }} Longitude
+                            </p> -->
+                            <br />
+                            <p>
+                                Login Sebagai :
+                                {{ auth.user.name }}
+                            </p>
+                            <p>
+                                Login Dengan Email:
+                                {{ auth.user.email }}
+                            </p>
+                            <div class="flex justify-center gap-4">
+                                <!-- <Link href="/dashboard">
+                            <button
+                                class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-8 rounded z-40 mt-8"
+                            >
+                                Dashboard
+                            </button>
+                        </Link> -->
+                                <button
+                                    class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-8 rounded z-40 mt-8"
+                                    onclick="logout_button.showModal()"
+                                >
+                                    Logout
+                                </button>
+                            </div>
+                            <dialog id="logout_button" class="modal">
+                                <div
+                                    class="modal-box bg-white flex gap-4 flex-col justify-center mx-auto"
+                                >
+                                    <h1 class="text-xl font-semibold">
+                                        Kamu yakin ingin Log Out?
+                                    </h1>
+                                    <div class="flex gap-4 justify-center mt-8">
+                                        <button
+                                            @click="logout"
+                                            :href="route('logout')"
+                                            method="post"
+                                            as="button"
+                                            class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded z-40"
+                                        >
+                                            Ya
+                                        </button>
+                                        <button
+                                            class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded z-40 modal-backdrop"
+                                            @click="closeModal"
+                                        >
+                                            Tidak
+                                        </button>
+                                    </div>
+                                </div>
+                            </dialog>
+                        </div>
+                        <form method="dialog" class="modal-backdrop">
+                            <button>close</button>
+                        </form>
+                    </dialog>
+                </div>
+            </div>
+
+            <!-- Show Marker -->
             <div
                 v-if="selectedMarker"
                 id="showmarker"
                 :data-id="selectedMarker ? selectedMarker.id : ''"
-                class="absolute z-10 inset-1/2 transform translate-x-8 -translate-y-40"
+                class="absolute z-10 inset-0 flex items-center justify-center"
                 style="display: none"
             >
                 <div
-                    class="bg-white w-96 h-auto rounded-md p-8 relative shadow-xl"
+                    class="bg-white w-full max-w-md h-auto rounded-xl p-8 relative shadow-xl mx-4"
                 >
                     <form @submit.prevent="editSaveFormData">
-                        <h1 class="pb-4">Alamat : {{ address }}</h1>
+                        <h1 class="pb-4 w-[90%]">Alamat : {{ address }}</h1>
 
                         <label for="notes">Description:</label>
 
-                        <!-- Textarea for other roles, enabled -->
-                        <h1 id="notes" class="w-full mb-2 p-2 border">
-                            {{ selectedMarker ? selectedMarker.notes : "" }}
-                        </h1>
+                        <textarea
+                            id="notes"
+                            class="w-full mb-2 p-2 border h-32 md:h-56"
+                            disabled
+                        >
+                                {{ selectedMarker ? selectedMarker.notes : "" }}
+                            </textarea
+                        >
 
-                        <!-- <div class="flex gap-4 justify-center">
-                            <button
-                                type="submit"
-                                class="bg-blue-500 text-white py-2 px-4 rounded-md"
-                            >
-                                Save
-                            </button>
-                            <button
-                                @click="deleteSaveFormData"
-                                type="button"
-                                class="bg-red-500 text-white py-2 px-4 rounded-md"
-                            >
-                                Delete
-                            </button>
-                        </div> -->
-                        <div>
+                        <div class="mt-8">
                             <h1>Dibuat oleh : {{ selectedMarker.name }}</h1>
                             <span>Dibuat pada : {{ selectedMarker.date }}</span>
                         </div>
@@ -522,9 +400,22 @@ export default defineComponent({
                     <div class="absolute top-0 right-1">
                         <button
                             @click="closeShowMarker"
-                            class="absolute top-2 right-2 text-red-500 hover:text-red-700 cursor-pointer"
+                            class="absolute top-2 right-2 bg-red-500 text-white cursor-pointer btn btn-circle"
                         >
-                            X
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                class="h-6 w-6"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                stroke="currentcolor"
+                            >
+                                <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    stroke-width="2"
+                                    d="M6 18L18 6M6 6l12 12"
+                                />
+                            </svg>
                         </button>
                     </div>
                 </div>
