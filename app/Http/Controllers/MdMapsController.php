@@ -122,6 +122,22 @@ class MdMapsController extends Controller
         }
     }
 
+    public function delete_user($id)
+    {
+        try {
+            $maps = User::find($id);
+
+            if ($maps) {
+                $maps->delete();
+                return response()->json(['message' => 'Data deleted successfully'], 200);
+            } else {
+                return response()->json(['error' => 'Data not found'], 404);
+            }
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Internal Server Error'], 500);
+        }
+    }
+
     /**
      * Remove the specified resource from storage.
      */

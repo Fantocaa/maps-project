@@ -7,7 +7,7 @@ import $ from "jquery";
 import axios from "axios";
 import { ref, onMounted } from "vue";
 import Button from "@/Components/Button.vue";
-// import { GithubIcon } from "@/Components/Icons/brands";
+import { GithubIcon } from "@/Components/Icons/brands";
 import "datatables.net-select";
 import "datatables.net-responsive";
 import { library } from "@fortawesome/fontawesome-svg-core";
@@ -19,6 +19,13 @@ DataTable.use(DataTablesCore);
 library.add(faPencil);
 
 let data = ref([]);
+
+// const deleteUser = async (id) => {
+//     if (confirm("Are you sure you want to delete this user?")) {
+//         await axios.delete(`/api/user/${id}`);
+//         await fetchData();
+//     }
+// };
 
 const fetchData = async () => {
     const response = await axios.get("/api/role");
@@ -45,9 +52,9 @@ const columns = [
     {
         data: null,
         title: "Actions",
-        // orderable: false,
+        orderable: false,
         render: function (data, type, row) {
-            return `<a href="/manage/user/${data.id}/edit">Edit</a>`;
+            return `<FontAwesomeIcon icon="pencil" @click="navigateToUserEdit(${data.id})"/>`;
         },
     },
 ];

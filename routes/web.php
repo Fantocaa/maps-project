@@ -5,6 +5,8 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Foundation\Application;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RegisterUserController;
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\MdMapsController;
 use Illuminate\Support\Facades\Auth;
 
 /*
@@ -45,6 +47,11 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+    Route::get('/manage/user/{id}/edit', [UserController::class, 'edit_user'])->name('user.edit');
+    Route::patch('/manage/user/update', [UserController::class, 'update_user'])->name('user.update');
+    Route::put('/manage/user/{id}/update_password', [UserController::class, 'update_password'])->name('user.update.password');
+    Route::delete('/manage/user/{id}/delete', [UserController::class, 'destroy_user'])->name('user.destroy');
 });
 
 Route::get('/components/buttons', function () {
@@ -54,6 +61,10 @@ Route::get('/components/buttons', function () {
 Route::get('/manage/user', function () {
     return Inertia::render('Components/Register');
 })->middleware(['auth', 'verified'])->name('manage.user');
+
+// Route::put('/manage/user/edit/{id}', [UserController::class, 'edit'])->name('manage.user.edit')->middleware(['auth', 'verified', 'role:superadmin']);
+
+// Route::post('/manage/user/delete/{id}', [MdMapsController::class, 'delete_user'])->name('manage.user.delete')->middleware(['auth', 'verified', 'role:superadmin']);
 
 //Maps Route
 

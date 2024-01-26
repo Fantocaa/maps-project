@@ -1,22 +1,23 @@
 <script setup>
 import { ref } from "vue";
-import { useForm } from "@inertiajs/vue3";
+import { useForm, usePage } from "@inertiajs/vue3";
 import Label from "@/Components/Label.vue";
 import Input from "@/Components/Input.vue";
 import InputError from "@/Components/InputError.vue";
 import Button from "@/Components/Button.vue";
+import { onMounted } from "vue";
 
 const passwordInput = ref(null);
-const currentPasswordInput = ref(null);
+const { props } = usePage();
+const userId = props.user.id;
 
 const form = useForm({
-    current_password: "",
     password: "",
     password_confirmation: "",
 });
 
 const updatePassword = () => {
-    form.put(route("password.update"), {
+    form.put(route("user.update.password", { id: userId }), {
         preserveScroll: true,
         onSuccess: () => form.reset(),
         onError: () => {
@@ -24,13 +25,13 @@ const updatePassword = () => {
                 form.reset("password", "password_confirmation");
                 passwordInput.value.focus();
             }
-            if (form.errors.current_password) {
-                form.reset("current_password");
-                currentPasswordInput.value.focus();
-            }
         },
     });
 };
+
+onMounted(() => {
+    console.log(userId);
+});
 </script>
 
 <template>
@@ -47,24 +48,6 @@ const updatePassword = () => {
         </header>
 
         <form @submit.prevent="updatePassword" class="mt-6 space-y-6">
-            <div>
-                <Label for="current_password" value="Current Password" />
-
-                <Input
-                    id="current_password"
-                    ref="currentPasswordInput"
-                    v-model="form.current_password"
-                    type="password"
-                    class="mt-1 block w-full"
-                    autocomplete="current-password"
-                />
-
-                <InputError
-                    :message="form.errors.current_password"
-                    class="mt-2"
-                />
-            </div>
-
             <div>
                 <Label for="password" value="New Password" />
 
