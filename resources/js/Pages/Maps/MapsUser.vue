@@ -131,8 +131,8 @@ export default defineComponent({
 
         const fetchData = async () => {
             try {
-                const response = await fetch("/api/maps");
-                const data = await response.json();
+                const response = await axios.get("/api/maps");
+                const data = response.data;
 
                 markers.value = data.map((map) => ({
                     position: {
@@ -145,6 +145,8 @@ export default defineComponent({
                     name: map.name,
                     date: map.date,
                 }));
+
+                console.log("Data fetched successfully:", markers.value);
             } catch (error) {
                 console.error("Error fetching data:", error);
             }
@@ -218,7 +220,7 @@ export default defineComponent({
         onMounted(async () => {
             fetchData();
             // Then call fetchData every 30 seconds
-            setInterval(fetchData, 60000);
+            // setInterval(fetchData, 60000);
             getCurrentLocation();
             getReverseGeocoding();
             fetchUser();
@@ -241,6 +243,7 @@ export default defineComponent({
             closeShowMarker,
             selectedMarker,
             mapWasMounted,
+            fetchData,
         };
     },
 });
@@ -288,18 +291,32 @@ export default defineComponent({
                 <div
                     class="absolute bottom-8 right-2 md:bottom-0 md:top-6 md:right-8 z-10"
                 >
-                    <!-- Open the modal using ID.showModal() method -->
-                    <button
-                        class="bg-red-600 border-none text-white hover:bg-slate-200 text-base pl-10 relative rounded-full btn shadow-xl"
-                        onclick="my_modal_2.showModal()"
-                    >
-                        <img
-                            src="/images/icon/user.svg"
-                            alt="User"
-                            class="absolute left-3 top-1/2 transform -translate-y-1/2"
-                        />
-                        Akun
-                    </button>
+                    <div class="flex gap-4">
+                        <!-- Open the modal using ID.showModal() method -->
+                        <button
+                            class="bg-green-600 border-none text-white hover:bg-slate-200 text-base pl-12 relative rounded-full btn shadow-xl"
+                            v-on:click="fetchData"
+                        >
+                            <img
+                                src="/images/icon/refresh.svg"
+                                alt="User"
+                                class="absolute left-3 top-1/2 transform -translate-y-1/2 scale-50"
+                            />
+                            Refresh
+                        </button>
+                        <button
+                            class="bg-red-600 border-none text-white hover:bg-slate-200 text-base pl-10 relative rounded-full btn shadow-xl"
+                            onclick="my_modal_2.showModal()"
+                        >
+                            <img
+                                src="/images/icon/user.svg"
+                                alt="User"
+                                class="absolute left-3 top-1/2 transform -translate-y-1/2"
+                            />
+                            Akun
+                        </button>
+                    </div>
+
                     <dialog id="my_modal_2" class="modal">
                         <div class="modal-box bg-white">
                             <h1 class="text-xl font-semibold pb-2">

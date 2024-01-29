@@ -21,17 +21,17 @@ use Illuminate\Support\Facades\Auth;
 */
 
 Route::get('/', function () {
-    if (Auth::check()) {
-        // The user is logged in, redirect them to the desired page
-        return redirect('/login');
-    } else {
-        return Inertia::render('Welcome', [
-            'canLogin' => Route::has('login'),
-            // 'canRegister' => Route::has('register'),
-            'laravelVersion' => Application::VERSION,
-            'phpVersion' => PHP_VERSION,
-        ]);
-    }
+    // if (Auth::check()) {
+    // The user is logged in, redirect them to the desired page
+    return redirect('/login');
+    // } else {
+    //     return Inertia::render('Welcome', [
+    //         'canLogin' => Route::has('login'),
+    //         // 'canRegister' => Route::has('register'),
+    //         'laravelVersion' => Application::VERSION,
+    //         'phpVersion' => PHP_VERSION,
+    //     ]);
+    // }
 });
 
 // Route::get('/register', function () {
