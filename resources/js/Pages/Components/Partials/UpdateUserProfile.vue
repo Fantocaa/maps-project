@@ -121,6 +121,7 @@ console.log(form.role);
                     <option value="user">User</option>
                     <option value="superuser">Super User</option>
                     <option value="admin">Admin</option>
+                    <option value="superadmin">Super Admin</option>
                 </select>
 
                 <InputError class="mt-2" :message="form.errors.role" />

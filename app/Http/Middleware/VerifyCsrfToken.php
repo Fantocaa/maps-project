@@ -12,6 +12,8 @@ class VerifyCsrfToken extends Middleware
      * @var array<int, string>
      */
     protected $except = [
-        //
+        'http://maps-project.test/*',
+        'http://pinpoin.tako.co.id/*',
+        'https://pinpoin.tako.co.id/*',
     ];
 }
