@@ -36,19 +36,19 @@ import { Link } from "@inertiajs/vue3";
             <div class="flex w-1/2 gap-4">
                 <Link
                     href="/maps/user"
-                    class="inline-flex items-center transition-colors font-medium select-none disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-dark-eval-2 px-5 py-2 bg-purple-500 text-white hover:bg-purple-600 focus:ring-purple-500 rounded-md justify-center gap-2"
+                    class="inline-flex items-center transition-colors font-medium select-none disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-dark-eval-2 px-5 py-2 bg-blue-500 text-white hover:bg-blue-600 focus:ring-blue-500 rounded-md justify-center gap-2"
                 >
                     Maps User
                 </Link>
                 <Link
                     href="/maps/superuser"
-                    class="inline-flex items-center transition-colors font-medium select-none disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-dark-eval-2 px-5 py-2 bg-purple-500 text-white hover:bg-purple-600 focus:ring-purple-500 rounded-md justify-center gap-2"
+                    class="inline-flex items-center transition-colors font-medium select-none disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-dark-eval-2 px-5 py-2 bg-blue-500 text-white hover:bg-blue-600 focus:ring-blue-500 rounded-md justify-center gap-2"
                 >
                     Maps Super User
                 </Link>
                 <Link
                     href="/maps/admin"
-                    class="inline-flex items-center transition-colors font-medium select-none disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-dark-eval-2 px-5 py-2 bg-purple-500 text-white hover:bg-purple-600 focus:ring-purple-500 rounded-md justify-center gap-2"
+                    class="inline-flex items-center transition-colors font-medium select-none disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-dark-eval-2 px-5 py-2 bg-blue-500 text-white hover:bg-blue-600 focus:ring-blue-500 rounded-md justify-center gap-2"
                 >
                     Maps Admin
                 </Link>

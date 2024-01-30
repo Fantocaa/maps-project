@@ -20,6 +20,13 @@ class MdMapsSeeder extends Seeder
         ]);
         $superadmin->assignRole('superadmin');
 
+        $superadmin = User::create([
+            'name' => 'Fantoca',
+            'email' => 'fantoca@tako.co.id',
+            'password' => bcrypt('12341234'),
+        ]);
+        $superadmin->assignRole('superadmin');
+
         $admin = User::create([
             'name' => 'admin',
             'email' => 'admin@tako.co.id',

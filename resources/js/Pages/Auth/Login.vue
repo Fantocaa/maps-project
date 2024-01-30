@@ -113,7 +113,7 @@ const submit = () => {
                     </Button>
                 </div>
 
-                <p class="text-sm text-gray-600 dark:text-gray-400">
+                <!-- <p class="text-sm text-gray-600 dark:text-gray-400">
                     Don't have an account?
                     <Link
                         :href="route('register')"
@@ -121,7 +121,7 @@ const submit = () => {
                     >
                         Register
                     </Link>
-                </p>
+                </p> -->
             </div>
         </form>
     </GuestLayout>

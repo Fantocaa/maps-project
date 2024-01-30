@@ -13,10 +13,10 @@ import "datatables.net-responsive";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 /* import specific icons */
-import { faPencil } from "@fortawesome/free-solid-svg-icons";
+import { faEdit } from "@fortawesome/free-solid-svg-icons";
 
 DataTable.use(DataTablesCore);
-library.add(faPencil);
+library.add(faEdit);
 
 let data = ref([]);
 
@@ -47,7 +47,9 @@ const columns = [
         title: "Actions",
         // orderable: false,
         render: function (data, type, row) {
-            return `<a href="/manage/user/${data.id}/edit">Edit</a>`;
+            return `<a href="/manage/user/${data.id}/edit">
+                <button type="btn" class="btn btn-primary">
+            Edit</button></a>`;
         },
     },
 ];
@@ -67,8 +69,6 @@ const columns = [
             >
                 <h2 class="text-xl font-semibold leading-tight">Manage User</h2>
                 <Button
-                    external
-                    variant="black"
                     class="items-center gap-2 max-w-xs"
                     v-slot="{ iconSizeClasses }"
                     href="/register"

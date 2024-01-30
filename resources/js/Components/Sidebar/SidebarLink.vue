@@ -1,7 +1,7 @@
 <script setup>
-import { Link } from '@inertiajs/vue3'
-import { sidebarState } from '@/Composables'
-import { EmptyCircleIcon } from '@/Components/Icons/outline'
+import { Link } from "@inertiajs/vue3";
+import { sidebarState } from "@/Composables";
+import { EmptyCircleIcon } from "@/Components/Icons/outline";
 
 const props = defineProps({
     href: {
@@ -20,9 +20,9 @@ const props = defineProps({
         type: Boolean,
         default: false,
     },
-})
+});
 
-const Tag = !props.external ? Link : 'a'
+const Tag = !props.external ? Link : "a";
 </script>
 
 <template>
@@ -35,8 +35,7 @@ const Tag = !props.external ? Link : 'a'
             {
                 'text-gray-400 hover:text-gray-700 hover:bg-gray-100 dark:hover:text-gray-300 dark:hover:bg-dark-eval-2':
                     !active,
-                'text-white bg-purple-500 shadow-lg hover:bg-purple-600':
-                    active,
+                'text-white bg-blue-500 shadow-lg hover:bg-blue-600': active,
             },
         ]"
     >
@@ -59,8 +58,7 @@ const Tag = !props.external ? Link : 'a'
             {
                 'text-gray-400 hover:text-gray-500 hover:bg-gray-100 dark:hover:text-gray-300 dark:hover:bg-dark-eval-2':
                     !active,
-                'text-white bg-purple-500 shadow-lg hover:bg-purple-600':
-                    active,
+                'text-white bg-blue-500 shadow-lg hover:bg-blue-600': active,
             },
         ]"
     >

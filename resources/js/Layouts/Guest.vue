@@ -38,7 +38,11 @@ defineProps({
                 iconOnly
                 variant="secondary"
                 type="button"
-                @click="toggleDarkMode"
+                @click="
+                    () => {
+                        toggleDarkMode();
+                    }
+                "
                 v-slot="{ iconSizeClasses }"
                 class="hidden md:inline-flex"
                 srText="Toggle dark mode"

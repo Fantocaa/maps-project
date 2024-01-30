@@ -28,7 +28,7 @@ import { TemplateIcon } from "@heroicons/vue/outline";
 
         <SidebarCollapsible
             title="Manage"
-            :active="route().current('components.*')"
+            :active="route().current('manage.*')"
         >
             <template #icon>
                 <TemplateIcon
