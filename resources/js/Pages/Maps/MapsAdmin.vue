@@ -60,7 +60,18 @@ export default defineComponent({
                 .then((response) => response.json())
                 .then((data) => {
                     if (data.results && data.results.length > 0) {
-                        const address = data.results[0].formatted_address;
+                        let address = data.results[0].formatted_address;
+
+                        // Hapus Plus Codes atau OLC dari alamat
+                        const plusCodeIndex = address.indexOf("+");
+                        if (plusCodeIndex !== -1) {
+                            const endOfPlusCode = address.indexOf(
+                                " ",
+                                plusCodeIndex
+                            );
+                            address = address.slice(endOfPlusCode).trim();
+                        }
+
                         return address; // Kembalikan alamat
                     } else {
                         return null; // Kembalikan null jika tidak ada hasil
@@ -212,6 +223,7 @@ export default defineComponent({
                         lat: lastMarker.position.lat,
                         lng: lastMarker.position.lng,
                         name: props.auth.user.name,
+                        lokasi: address.value,
                     };
 
                     // Menggunakan Ajax jQuery untuk mengirim data

@@ -60,8 +60,10 @@ class MdMapsController extends Controller
         $form->notes = $request->notes;
         $form->lat = $request->lat;
         $form->lng = $request->lng;
+        $form->lokasi = $request->lokasi;
         $form->name = $request->name;
         $form->date = Carbon::now()->toDateString();
+        // dd($form);
         $form->save();
     }
 
