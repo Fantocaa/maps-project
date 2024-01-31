@@ -251,16 +251,32 @@ export default defineComponent({
 });
 </script>
 
+<style scoped>
+.map-responsive {
+    overflow: hidden;
+    padding-bottom: 56.25%;
+    position: relative;
+    height: 0;
+}
+.map-responsive iframe {
+    left: 0;
+    top: 0;
+    height: 100%;
+    width: 100%;
+    position: absolute;
+}
+</style>
+
 <template>
     <Head title="Maps" />
-    <div class="mx-auto relative min-h-screen">
+    <div class="mx-auto relative min-h-screen map-responsive">
         <GMapMap
             api-key="AIzaSyD2dASx5Zo68GSyZuPjUs-4SBLYGsn4OPQ"
             id="google-map"
             style="width: 100%; height: 100vh"
             :center="center"
             :zoom="zoom"
-            :options="{ disableDefaultUI: true }"
+            :options="{ disableDefaultUI: false }"
             @load="mapWasMounted"
         >
             <GMapMarker
