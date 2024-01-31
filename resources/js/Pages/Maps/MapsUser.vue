@@ -253,8 +253,15 @@ export default defineComponent({
 
 <template>
     <Head title="Maps" />
-    <div class="mx-auto relative pt-6 lg:pt-0 h-full">
-        <div class="lg:hidden top-4 md:top-4 w-full px-4 md:px-8">
+    <div class="mx-auto relative h-full">
+        <div class="-z-50 absolute w-full">
+            <img
+                src="/images/5328478.jpg"
+                alt="bg"
+                class="object-cover h-screen w-full"
+            />
+        </div>
+        <div class="lg:hidden top-4 md:top-4 w-full px-4 md:px-8 pt-6 lg:pt-0">
             <div class="relative mb-6">
                 <img
                     src="/images/icon/search.svg"
@@ -269,12 +276,11 @@ export default defineComponent({
                 </GMapAutocomplete>
             </div>
         </div>
-        <!-- style="width: 100%; height: 80vh" -->
         <GMapMap
             api-key="AIzaSyD2dASx5Zo68GSyZuPjUs-4SBLYGsn4OPQ"
             id="google-map"
             :center="center"
-            class="w-full h-[75vh] lg:h-screen"
+            class="w-full h-[60vh] lg:h-screen"
             :zoom="zoom"
             :options="{ disableDefaultUI: true }"
             @load="mapWasMounted"
@@ -310,12 +316,12 @@ export default defineComponent({
                 </div>
 
                 <div
-                    class="pt-8 lg:pt-0 lg:absolute bottom-8 right-2 md:bottom-0 md:top-6 md:right-8 z-10"
+                    class="pt-6 lg:pt-0 lg:absolute bottom-8 right-2 md:bottom-0 md:top-6 md:right-8 z-10"
                 >
                     <div class="flex gap-4 justify-end mx-4">
                         <!-- Open the modal using ID.showModal() method -->
                         <button
-                            class="bg-green-600 border-none text-white hover:bg-slate-200 text-base pl-12 relative rounded-full btn shadow-xl"
+                            class="bg-green-600 border-none text-white hover:bg-green-700 text-base pl-12 relative rounded-full btn shadow-xl"
                             v-on:click="fetchData"
                         >
                             <img
@@ -326,7 +332,7 @@ export default defineComponent({
                             Refresh
                         </button>
                         <button
-                            class="bg-red-600 border-none text-white hover:bg-slate-200 text-base pl-10 relative rounded-full btn shadow-xl"
+                            class="bg-red-600 border-none text-white hover:bg-red-700 text-base pl-10 relative rounded-full btn shadow-xl"
                             onclick="my_modal_2.showModal()"
                         >
                             <img
