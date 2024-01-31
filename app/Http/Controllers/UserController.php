@@ -46,7 +46,7 @@ class UserController extends Controller
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255'],
-            'role' => ['required', Rule::in(['user', 'superuser', 'admin'])],
+            'role' => ['required', Rule::in(['user', 'superuser', 'admin', 'superadmin'])],
         ]);
 
         $user = User::find($userId);

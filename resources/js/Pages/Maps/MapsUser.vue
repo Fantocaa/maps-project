@@ -102,6 +102,7 @@ export default defineComponent({
                     notes: clickedMarker.notes,
                     name: clickedMarker.name,
                     date: clickedMarker.date,
+                    lokasi: clickedMarker.lokasi,
                     showForm: true,
                 };
                 $("#showmarker").show();
@@ -144,6 +145,7 @@ export default defineComponent({
                     notes: map.notes,
                     name: map.name,
                     date: map.date,
+                    lokasi: map.lokasi,
                 }));
 
                 console.log("Data fetched successfully:", markers.value);
@@ -251,7 +253,7 @@ export default defineComponent({
 
 <template>
     <Head title="Maps" />
-    <div class="mx-auto relative">
+    <div class="mx-auto relative min-h-screen">
         <GMapMap
             api-key="AIzaSyD2dASx5Zo68GSyZuPjUs-4SBLYGsn4OPQ"
             id="google-map"
@@ -396,7 +398,9 @@ export default defineComponent({
                     class="bg-white w-full max-w-md h-auto rounded-xl p-8 relative shadow-xl mx-4"
                 >
                     <form @submit.prevent="editSaveFormData">
-                        <h1 class="pb-4 w-[90%]">Alamat : {{ address }}</h1>
+                        <h1 class="pb-4 w-[90%]">
+                            Alamat : {{ selectedMarker.lokasi }}
+                        </h1>
 
                         <label for="notes">Description:</label>
 

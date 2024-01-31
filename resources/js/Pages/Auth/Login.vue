@@ -35,7 +35,7 @@ const submit = () => {
             {{ status }}
         </div>
 
-        <form @submit.prevent="submit">
+        <form @submit.prevent="submit" ca>
             <div class="grid gap-6">
                 <div class="space-y-2">
                     <Label for="email" value="Email" />
