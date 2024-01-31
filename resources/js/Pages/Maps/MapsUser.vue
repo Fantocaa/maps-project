@@ -251,33 +251,34 @@ export default defineComponent({
 });
 </script>
 
-<style scoped>
-.map-responsive {
-    overflow: hidden;
-    padding-bottom: 56.25%;
-    position: relative;
-    height: 0;
-}
-.map-responsive iframe {
-    left: 0;
-    top: 0;
-    height: 100%;
-    width: 100%;
-    position: absolute;
-}
-</style>
-
 <template>
     <Head title="Maps" />
-    <div class="mx-auto relative min-h-screen map-responsive">
+    <div class="mx-auto relative pt-6 lg:pt-0 h-full">
+        <div class="lg:hidden top-4 md:top-4 w-full px-4 md:px-8">
+            <div class="relative mb-6">
+                <img
+                    src="/images/icon/search.svg"
+                    alt="search"
+                    class="absolute left-5 top-1/2 transform -translate-y-1/2"
+                />
+                <GMapAutocomplete
+                    placeholder="Cari Lokasi"
+                    @place_changed="setPlace"
+                    class="px-4 py-2 md:py-4 w-full md:w-[576px] xl:w-[800px] rounded-full focus:outline-none focus:ring focus:border-blue-300 lg:shadow-xl border pl-14 text-lg"
+                >
+                </GMapAutocomplete>
+            </div>
+        </div>
+        <!-- style="width: 100%; height: 80vh" -->
         <GMapMap
             api-key="AIzaSyD2dASx5Zo68GSyZuPjUs-4SBLYGsn4OPQ"
             id="google-map"
-            style="width: 100%; height: 100vh"
             :center="center"
+            class="w-full h-[75vh] lg:h-screen"
             :zoom="zoom"
-            :options="{ disableDefaultUI: false }"
+            :options="{ disableDefaultUI: true }"
             @load="mapWasMounted"
+            gestureHandling="greedy"
         >
             <GMapMarker
                 :clickable="true"
@@ -289,8 +290,10 @@ export default defineComponent({
             />
             <!-- Menampilkan semua marker dalam array markers -->
 
-            <div class="">
-                <div class="absolute top-4 md:top-4 w-full px-2 md:px-8">
+            <div>
+                <div
+                    class="hidden lg:block lg:absolute top-4 md:top-4 w-full px-2 md:px-8"
+                >
                     <div class="relative">
                         <img
                             src="/images/icon/search.svg"
@@ -307,9 +310,9 @@ export default defineComponent({
                 </div>
 
                 <div
-                    class="absolute bottom-8 right-2 md:bottom-0 md:top-6 md:right-8 z-10"
+                    class="pt-8 lg:pt-0 lg:absolute bottom-8 right-2 md:bottom-0 md:top-6 md:right-8 z-10"
                 >
-                    <div class="flex gap-4">
+                    <div class="flex gap-4 justify-end mx-4">
                         <!-- Open the modal using ID.showModal() method -->
                         <button
                             class="bg-green-600 border-none text-white hover:bg-slate-200 text-base pl-12 relative rounded-full btn shadow-xl"
