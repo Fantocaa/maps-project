@@ -49,4 +49,9 @@ class User extends Authenticatable
     {
         return $this->roles->pluck('name');
     }
+
+    public function companies()
+    {
+        return $this->belongsToMany(user_company::class, 'user_companies', 'user_id', 'company_id');
+    }
 }

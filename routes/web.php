@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\MdAgentController;
+use App\Http\Controllers\MdCompanyController;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Foundation\Application;
@@ -7,6 +9,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RegisterUserController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\MdMapsController;
+use App\Http\Controllers\MdSatuanController;
 use Illuminate\Support\Facades\Auth;
 
 /*
@@ -52,6 +55,21 @@ Route::middleware('auth')->group(function () {
     Route::patch('/manage/user/update', [UserController::class, 'update_user'])->name('user.update');
     Route::put('/manage/user/{id}/update_password', [UserController::class, 'update_password'])->name('user.update.password');
     Route::delete('/manage/user/{id}/delete', [UserController::class, 'destroy_user'])->name('user.destroy');
+
+    Route::post('/manage/company/new', [MdCompanyController::class, 'store'])->name('company.store');
+    Route::get('/manage/company/{id}/edit', [MdCompanyController::class, 'edit_company'])->name('company.edit');
+    Route::patch('/manage/company/update', [MdCompanyController::class, 'update_company'])->name('company.update');
+    Route::delete('/manage/company/{id}/delete', [MdCompanyController::class, 'destroy_company'])->name('company.destroy');
+
+    Route::post('/manage/agent/new', [MdAgentController::class, 'store'])->name('agent.store');
+    Route::get('/manage/agent/{id}/edit', [MdAgentController::class, 'edit_agent'])->name('agent.edit');
+    Route::patch('/manage/agent/update', [MdAgentController::class, 'update_agent'])->name('agent.update');
+    Route::delete('/manage/agent/{id}/delete', [MdAgentController::class, 'destroy_agent'])->name('agent.destroy');
+
+    Route::post('/manage/unit/new', [MdSatuanController::class, 'store'])->name('unit.store');
+    Route::get('/manage/unit/{id}/edit', [MdSatuanController::class, 'edit_unit'])->name('unit.edit');
+    Route::patch('/manage/unit/update', [MdSatuanController::class, 'update_unit'])->name('unit.update');
+    Route::delete('/manage/unit/{id}/delete', [MdSatuanController::class, 'destroy_unit'])->name('unit.destroy');
 });
 
 Route::get('/components/buttons', function () {
@@ -61,6 +79,10 @@ Route::get('/components/buttons', function () {
 Route::get('/manage/user', function () {
     return Inertia::render('Components/Register');
 })->middleware(['auth', 'verified'])->name('manage.user');
+
+Route::get('/manage/company', function () {
+    return Inertia::render('Components/Company');
+})->middleware(['auth', 'verified'])->name('manage.company');
 
 // Route::put('/manage/user/edit/{id}', [UserController::class, 'edit'])->name('manage.user.edit')->middleware(['auth', 'verified', 'role:superadmin']);
 

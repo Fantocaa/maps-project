@@ -41,12 +41,16 @@ class UserController extends Controller
 
     public function update_user(UpdateUserRequest $request): RedirectResponse
     {
+
+        // dd($request->company_id);
         $userId = $request->id; // get the user id from the request
 
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255'],
             'role' => ['required', Rule::in(['user', 'superuser', 'admin', 'superadmin'])],
+            'company_id' => ['required', 'array'], // ensure that company_ids is an array
+            'company_id.*' => ['exists:md_companies,id'], // ensure that each company id exists in the companies table
         ]);
 
         $user = User::find($userId);
@@ -57,6 +61,12 @@ class UserController extends Controller
 
         $user->roles()->detach();
         $user->assignRole($request->role);
+
+        // detach any existing companies and attach the new ones
+        $user->companies()->sync($request->company_id);
+
+        // attach new companies without detaching the existing ones
+        // $user->companies()->syncWithoutDetaching($request->company_id);
 
         return Redirect::route('manage.user');
     }

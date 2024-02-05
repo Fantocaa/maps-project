@@ -102,8 +102,6 @@ class MdMapsController extends Controller
             // $form->lng = $request->lng;
             $form->save();
         } else {
-            // Handle ketika objek tidak ditemukan
-            // Misalnya, Anda bisa melempar exception atau memberikan respon yang sesuai
             return response()->json(['error' => 'Data not found'], 404);
         }
     }

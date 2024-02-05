@@ -254,13 +254,6 @@ export default defineComponent({
 <template>
     <Head title="Maps" />
     <div class="mx-auto relative h-full">
-        <div class="-z-50 absolute w-full">
-            <img
-                src="/images/5328478.jpg"
-                alt="bg"
-                class="object-cover h-screen w-full"
-            />
-        </div>
         <div class="lg:hidden top-4 md:top-4 w-full px-4 md:px-8 pt-6 lg:pt-0">
             <div class="relative mb-6">
                 <img

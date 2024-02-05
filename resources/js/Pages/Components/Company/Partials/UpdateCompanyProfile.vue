@@ -6,7 +6,6 @@ import Button from "@/Components/Button.vue";
 import Input from "@/Components/Input.vue";
 import { Link, useForm, usePage } from "@inertiajs/vue3";
 import { ref, onMounted } from "vue";
-import VueSelect from "vue-select";
 
 // const props = defineProps({
 //     mustVerifyEmail: Boolean,
@@ -15,25 +14,21 @@ import VueSelect from "vue-select";
 // });
 
 const { props } = usePage();
-let companies = ref([]); // Add this line
 
 let form = useForm({
-    id: ref(props.user.id),
-    name: ref(props.user.name),
-    email: ref(props.user.email),
-    role: ref(props.user.roles[0].name),
-    company_id: ref([]), // Add this line
+    id: ref(props.data.id),
+    name: ref(props.data.name_company),
 });
 
-const fetchDataCompany = async () => {
-    const response = await axios.get("/api/company");
-    companies.value = response.data;
-    console.log(response.data);
-};
-
-onMounted(() => {
-    fetchDataCompany();
-});
+// onMounted(() => {
+//     if (props.user) {
+//         form = useForm({
+//             id: ref(props.user.id),
+//             name: ref(props.user.name),
+//             email: ref(props.user.email),
+//         });
+//     }
+// });
 </script>
 
 <template>
@@ -51,7 +46,7 @@ onMounted(() => {
         <!-- @submit.prevent="form.patch(route('user.update'))" -->
         <form
             @submit.prevent="
-                form.patch(route('user.update', { id: props.user.id }))
+                form.patch(route('company.update', { id: props.data.id }))
             "
             class="mt-6 space-y-6"
         >
@@ -71,7 +66,7 @@ onMounted(() => {
                 <InputError class="mt-2" :message="form.errors.name" />
             </div>
 
-            <div>
+            <!-- <div>
                 <Label for="email" value="Email" />
 
                 <Input
@@ -107,54 +102,7 @@ onMounted(() => {
                 >
                     A new verification link has been sent to your email address.
                 </div>
-            </div>
-
-            <div>
-                <Label for="role" value="Role" />
-
-                <select
-                    id="role"
-                    v-model="form.role"
-                    required
-                    :class="[
-                        'py-2 border-gray-400 rounded-md',
-                        'focus:border-gray-400 focus:ring focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-white',
-                        'dark:border-gray-600 dark:bg-dark-eval-1 dark:text-gray-300 dark:focus:ring-offset-dark-eval-1 w-full',
-                        {
-                            'px-4': !withIcon,
-                            'pl-11 pr-4': withIcon,
-                        },
-                    ]"
-                >
-                    <option value="user">User</option>
-                    <option value="superuser">Super User</option>
-                    <option value="admin">Admin</option>
-                    <option value="superadmin">Super Admin</option>
-                </select>
-
-                <InputError class="mt-2" :message="form.errors.role" />
-            </div>
-
-            <div>
-                <Label for="company" value="Company" />
-                <VueSelect
-                    id="company"
-                    v-model="form.company_id"
-                    :options="companies"
-                    multiple
-                    required
-                    :class="[
-                        'py-2 border-gray-400 rounded-md',
-                        'focus:border-gray-400 focus:ring focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-white',
-                        'dark:border-gray-600 dark:bg-dark-eval-1 dark:text-gray-300 dark:focus:ring-offset-dark-eval-1 w-full bg-dark-eval-0',
-                    ]"
-                    label="name_company"
-                    track-by="id"
-                    :reduce="(company) => company.id"
-                />
-
-                <InputError class="mt-2" :message="form.errors.company_id" />
-            </div>
+            </div> -->
 
             <div class="flex items-center gap-4">
                 <Button :disabled="form.processing">Save</Button>

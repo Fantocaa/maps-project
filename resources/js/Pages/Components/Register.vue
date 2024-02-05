@@ -84,7 +84,6 @@ const columns = [
                 :columns="columns"
                 class="table table-hover table-striped"
                 width="100%"
-                @click="navigateToUserEdit"
             />
         </template>
     </AuthenticatedLayout>

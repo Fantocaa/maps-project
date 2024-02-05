@@ -43,9 +43,9 @@ import { TemplateIcon } from "@heroicons/vue/outline";
                 :active="route().current('manage.user')"
             />
             <SidebarCollapsibleItem
-                :href="route('components.buttons')"
+                :href="route('manage.company')"
                 title="Manage Company"
-                :active="route().current('components.buttons')"
+                :active="route().current('manage.company')"
             />
         </SidebarCollapsible>
 

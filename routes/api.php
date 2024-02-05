@@ -1,6 +1,10 @@
 <?php
 
+use App\Http\Controllers\MdAgentController;
+use App\Http\Controllers\MdBiayaController;
+use App\Http\Controllers\MdCompanyController;
 use App\Http\Controllers\MdMapsController;
+use App\Http\Controllers\MdSatuanController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -27,4 +31,9 @@ Route::middleware([])->group(function () {
     Route::delete('/maps/delete/{id}/', [MdMapsController::class, 'delete_maps'])->name('delete_form_maps');
 
     Route::get('/role', [MdMapsController::class, 'has_role'])->name('has_role');
+
+    Route::get('/company', [MdCompanyController::class, 'index'])->name('index.company');
+    Route::get('/agent', [MdAgentController::class, 'index'])->name('index.agent');
+    Route::get('/unit', [MdSatuanController::class, 'index'])->name('index.unit');
+    Route::get('/biaya', [MdBiayaController::class, 'index'])->name('index.biaya');
 });

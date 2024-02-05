@@ -6,10 +6,16 @@ import { Head } from "@inertiajs/vue3";
 import { router } from "@inertiajs/vue3";
 import { Link } from "@inertiajs/vue3";
 import axios from "axios";
+import VueSelect from "vue-select";
 
 export default defineComponent({
     emits: ["position_changed", "tilt_changed"],
-    components: { Marker, Head, Link },
+    components: {
+        Marker,
+        Head,
+        Link,
+        "v-select": VueSelect,
+    },
     props: { auth: Object },
     setup(props) {
         const center = ref({ lat: 0, lng: 0 });
@@ -90,7 +96,11 @@ export default defineComponent({
         const formInput = ref({
             // title: "",
             notes: "",
+            name_penerima: "",
+            name_agent: null,
         });
+
+        const options = ref([]);
 
         const handleMapClick = (event) => {
             const clickedPosition = {
@@ -185,6 +195,8 @@ export default defineComponent({
                     date: map.date,
                     lokasi: map.lokasi,
                 }));
+                // Isi options dengan nama dari setiap peta
+                options.value = data.map((map) => map.name);
             } catch (error) {
                 console.error("Error fetching data:", error);
             }
@@ -362,7 +374,7 @@ export default defineComponent({
         onMounted(async () => {
             fetchData();
             // Then call fetchData every 30 seconds
-            setInterval(fetchData, 60000);
+            // setInterval(fetchData, 60000);
             getCurrentLocation();
             getReverseGeocoding();
             fetchUser();
@@ -389,6 +401,7 @@ export default defineComponent({
             selectedMarker,
             mapWasMounted,
             saveFormData,
+            options,
         };
     },
 });
@@ -396,16 +409,32 @@ export default defineComponent({
 
 <template>
     <Head title="Maps" />
-    <div class="mx-auto relative">
+    <div class="mx-auto relative h-full">
+        <div class="lg:hidden top-4 md:top-4 w-full px-4 md:px-8 pt-6 lg:pt-0">
+            <div class="relative mb-6">
+                <img
+                    src="/images/icon/search.svg"
+                    alt="search"
+                    class="absolute left-5 top-1/2 transform -translate-y-1/2"
+                />
+                <GMapAutocomplete
+                    placeholder="Cari Lokasi"
+                    @place_changed="setPlace"
+                    class="px-4 py-2 md:py-4 w-full md:w-[576px] xl:w-[800px] rounded-full focus:outline-none focus:ring focus:border-blue-300 lg:shadow-xl border pl-14 text-lg"
+                >
+                </GMapAutocomplete>
+            </div>
+        </div>
         <GMapMap
             api-key="AIzaSyD2dASx5Zo68GSyZuPjUs-4SBLYGsn4OPQ"
             id="google-map"
-            style="width: 100%; height: 100vh"
+            class="w-full h-[60vh] lg:h-screen"
             :center="center"
             :zoom="zoom"
             :options="{ disableDefaultUI: true }"
             @load="mapWasMounted"
             @click="handleMapClick"
+            gestureHandling="greedy"
         >
             <GMapMarker
                 :clickable="true"
@@ -417,8 +446,10 @@ export default defineComponent({
             />
             <!-- Menampilkan semua marker dalam array markers -->
 
-            <div class="">
-                <div class="absolute top-4 md:top-4 w-full px-2 md:px-8">
+            <div>
+                <div
+                    class="hidden lg:block lg:absolute top-4 md:top-4 w-full px-2 md:px-8"
+                >
                     <div class="relative">
                         <img
                             src="/images/icon/search.svg"
@@ -435,11 +466,11 @@ export default defineComponent({
                 </div>
 
                 <div
-                    class="absolute bottom-8 right-2 md:bottom-0 md:top-6 md:right-8 z-10"
+                    class="pt-6 lg:pt-0 lg:absolute bottom-8 right-2 md:bottom-0 md:top-6 md:right-8 z-10 flex justify-end px-4"
                 >
                     <!-- Open the modal using ID.showModal() method -->
                     <button
-                        class="bg-red-600 border-none text-white hover:bg-slate-200 text-base pl-10 relative rounded-full btn shadow-xl"
+                        class="bg-red-600 border-none text-white hover:bg-red-700 text-base pl-10 relative rounded-full btn shadow-xl"
                         onclick="my_modal_2.showModal()"
                     >
                         <img
@@ -527,16 +558,48 @@ export default defineComponent({
                 >
                     <form @submit.prevent="saveFormData">
                         <h1 class="pb-4 w-[90%]">Alamat : {{ address }}</h1>
-                        <label for="notes">Description:</label>
-                        <textarea
-                            v-model="formInput.notes"
-                            id="notes"
-                            class="w-full mb-2 p-2 border focus:outline-none focus:ring focus:border-blue-300 h-32 md:h-56"
-                        ></textarea>
-                        <p v-if="!formInput.notes" class="text-red-500 mb-4">
-                            Description tidak boleh kosong
-                        </p>
-
+                        <div>
+                            <label for="name_penerima" class="pb-2"
+                                >Nama Penerima:</label
+                            >
+                            <input
+                                v-model="formInput.name_penerima"
+                                id="name_penerima"
+                                class="w-full mb-2 p-2 border focus:outline-none focus:ring focus:border-blue-300 rounded-lg"
+                            />
+                            <p
+                                v-if="!formInput.name_penerima"
+                                class="text-red-500 mb-4"
+                            >
+                                Nama Penerima tidak boleh kosong
+                            </p>
+                        </div>
+                        <div>
+                            <label for="name_agent" class="pb-2"
+                                >Nama Agent:</label
+                            >
+                            <v-select :options="options" />
+                            <p
+                                v-if="!formInput.name_agent"
+                                class="text-red-500 mb-4"
+                            >
+                                Agent tidak boleh kosong
+                            </p>
+                        </div>
+                        <div>
+                            <label for="notes" class="pb-2">Catatan:</label>
+                            <input
+                                v-model="formInput.notes"
+                                id="notes"
+                                class="w-full mb-2 p-2 border focus:outline-none focus:ring focus:border-blue-300 h-32 md:h-16 rounded-lg"
+                            />
+                            <p
+                                v-if="!formInput.notes"
+                                class="text-red-500 mb-4"
+                            >
+                                Catatan tidak boleh kosong
+                            </p>
+                        </div>
                         <div class="flex gap-4 justify-center">
                             <button
                                 type="submit"
