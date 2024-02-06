@@ -5,6 +5,12 @@ namespace App\Http\Controllers;
 use App\Models\md_satuan;
 use App\Http\Requests\Storemd_satuanRequest;
 use App\Http\Requests\Updatemd_satuanRequest;
+use Inertia\Inertia;
+use Inertia\Response;
+use Illuminate\Http\Request;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Redirect;
 
 class MdSatuanController extends Controller
 {
@@ -30,7 +36,11 @@ class MdSatuanController extends Controller
      */
     public function store(Storemd_satuanRequest $request)
     {
-        //
+        $company = new md_satuan();
+        $company->name_satuan = $request->name_satuan;
+        $company->save();
+
+        return Inertia::render('Components/Company');
     }
 
     /**

@@ -10,7 +10,6 @@ import axios from "axios";
 import { reactive, ref, onMounted } from "vue";
 import Button from "@/Components/Button.vue";
 // import { GithubIcon } from "@/Components/Icons/brands";
-import TableLite from "vue3-table-lite";
 
 DataTable.use(DataTablesCore);
 
@@ -22,13 +21,13 @@ const biayaData = ref(null);
 const fetchDataCompany = async () => {
     const response = await axios.get("/api/company");
     companyData.value = response.data;
-    console.log(response.data);
+    // console.log(response.data);
 };
 
 const fetchDataAgent = async () => {
     const response = await axios.get("/api/agent");
     agentData.value = response.data;
-    console.log(response.data);
+    // console.log(response.data);
 };
 
 const fetchDataUnit = async () => {
@@ -40,7 +39,7 @@ const fetchDataUnit = async () => {
 const fetchDataBiaya = async () => {
     const response = await axios.get("/api/biaya");
     unitData.value = response.data;
-    console.log(response.data);
+    // console.log(response.data);
 };
 
 onMounted(async () => {
@@ -216,14 +215,14 @@ const columnsBiaya = [
                         </form>
                         <form action="/manage/unit/new" method="post">
                             <label
-                                for="name_unit"
+                                for="name_satuan"
                                 class="block text-sm font-medium"
                                 >Unit Name</label
                             >
                             <input
                                 type="text"
-                                id="name_unit"
-                                name="name_unit"
+                                id="name_satuan"
+                                name="name_satuan"
                                 class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm my-4 text-dark-eval-0"
                             />
                             <button type="submit" class="mt-2 btn btn-primary">
@@ -323,7 +322,7 @@ const columnsBiaya = [
                             class="btn border border-dark-eval-2"
                             onclick="biaya.showModal()"
                         >
-                            Add New Biaya
+                            Add New Nama Biaya
                         </button>
                     </div>
                     <DataTable

@@ -6,7 +6,8 @@ import { Head } from "@inertiajs/vue3";
 import { router } from "@inertiajs/vue3";
 import { Link } from "@inertiajs/vue3";
 import axios from "axios";
-import VueSelect from "vue-select";
+import vSelect from "vue-select";
+import "vue-select/dist/vue-select.css";
 
 export default defineComponent({
     emits: ["position_changed", "tilt_changed"],
@@ -14,7 +15,7 @@ export default defineComponent({
         Marker,
         Head,
         Link,
-        "v-select": VueSelect,
+        vSelect,
     },
     props: { auth: Object },
     setup(props) {
@@ -25,8 +26,11 @@ export default defineComponent({
         const mapInstance = ref(null);
         const address = ref("");
         const user = ref([]);
+        const agent = ref([]);
+        const satuan = ref([]);
+        const matchingUser = ref(null);
 
-        // console.log(props.auth.user);
+        // console.log(props.auth.user.id);
 
         const getCurrentLocation = () => {
             if (markers.value.length > 0) {
@@ -41,11 +45,6 @@ export default defineComponent({
                                 lng: position.coords.longitude,
                             };
                             center.value = userLocation;
-                            // markers.value.push({
-                            //   position: userLocation,
-                            //   label: "",
-                            //   title: "Your Location",
-                            // });
                         },
                         (error) => {
                             console.error("Error getting location:", error);
@@ -94,10 +93,10 @@ export default defineComponent({
         };
 
         const formInput = ref({
-            // title: "",
             notes: "",
             name_penerima: "",
             name_agent: null,
+            biaya: [""],
         });
 
         const options = ref([]);
@@ -196,7 +195,7 @@ export default defineComponent({
                     lokasi: map.lokasi,
                 }));
                 // Isi options dengan nama dari setiap peta
-                options.value = data.map((map) => map.name);
+                // options.value = data.map((map) => map.name);
             } catch (error) {
                 console.error("Error fetching data:", error);
             }
@@ -207,18 +206,71 @@ export default defineComponent({
                 const response = await axios.get("/api/role");
                 const data = response.data;
                 user.value = data.map((user) => ({
-                    role_names: user.role_names,
+                    id: user.id,
+                    name: user.name,
+                    email: user.email,
+                    email_verified_at: user.email_verified_at,
+                    created_at: user.created_at,
+                    updated_at: user.updated_at,
+                    deleted_at: user.deleted_at,
+                    roles: user.role,
+                    company: user.company,
                 }));
 
-                // console.log(user.value);
+                // // Mencari user yang cocok
+                // const matchingUser = user.value.find(
+                //     (u) => u.id === props.auth.user.id
+                // );
+
+                // Mencari user yang cocok
+                const foundUser = user.value.find(
+                    (u) => u.id === props.auth.user.id
+                );
+
+                if (foundUser) {
+                    // User ditemukan, simpan data tersebut ke matchingUser
+                    matchingUser.value = foundUser;
+                    console.log("User ditemukan:", matchingUser.value);
+                } else {
+                    // User tidak ditemukan, lakukan sesuatu yang lain
+                    console.log("User tidak ditemukan");
+                }
             } catch (error) {
                 console.error("Error fetching data:", error);
             }
         };
 
+        const fetchAgent = async () => {
+            try {
+                const response = await axios.get("/api/agent");
+                const data = response.data;
+                agent.value = data.map((agent) => agent.name_agent);
+            } catch (error) {
+                console.error("Error fetching data:", error);
+            }
+        };
+
+        const fetchUnit = async () => {
+            try {
+                const response = await axios.get("/api/unit");
+                const data = response.data;
+                satuan.value = data.map((satuan) => satuan.name_satuan);
+                console.log(satuan.value);
+            } catch (error) {
+                console.error("Error fetching data:", error);
+            }
+        };
+
+        const tambahBiaya = () => {
+            formInput.value.biaya.push("");
+        };
+        const kurangiBiaya = () => {
+            if (formInput.value.biaya.length > 1) {
+                formInput.value.biaya.pop();
+            }
+        };
+
         const saveFormData = () => {
-            // lat: markers.value[markers.value.length - 1].position.lat,
-            // lng: markers.value[markers.value.length - 1].position.lng,
             if (markers.value.length > 0) {
                 const lastMarker = markers.value[markers.value.length - 1];
 
@@ -373,11 +425,13 @@ export default defineComponent({
 
         onMounted(async () => {
             fetchData();
+            fetchAgent();
+            fetchUser();
+            fetchUnit();
             // Then call fetchData every 30 seconds
             // setInterval(fetchData, 60000);
             getCurrentLocation();
             getReverseGeocoding();
-            fetchUser();
             // handleMarkerClick();
             // $("#showmarker").hide();
         });
@@ -385,12 +439,17 @@ export default defineComponent({
         return {
             user,
             zoom,
+            agent,
             center,
+            satuan,
             logout,
             markers,
             address,
             setPlace,
+            matchingUser,
+            kurangiBiaya,
             formInput,
+            tambahBiaya,
             closeModal,
             klikmarker,
             handleMapClick,
@@ -482,7 +541,7 @@ export default defineComponent({
                     </button>
                     <dialog id="my_modal_2" class="modal">
                         <div class="modal-box bg-white">
-                            <h1 class="text-xl font-semibold pb-2">
+                            <h1 class="text-xl font-semibold">
                                 Informasi Akun
                             </h1>
                             <!-- <p>
@@ -495,17 +554,18 @@ export default defineComponent({
                                 {{ auth.user.name }}
                             </p>
                             <p>
+                                Perusahaan:
+                                {{
+                                    matchingUser
+                                        ? matchingUser.company.join(", ")
+                                        : "Loading..."
+                                }}
+                            </p>
+                            <p>
                                 Login Dengan Email:
                                 {{ auth.user.email }}
                             </p>
                             <div class="flex justify-center gap-4">
-                                <!-- <Link href="/dashboard">
-                            <button
-                                class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-8 rounded z-40 mt-8"
-                            >
-                                Dashboard
-                            </button>
-                        </Link> -->
                                 <button
                                     class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-8 rounded z-40 mt-8"
                                     onclick="logout_button.showModal()"
@@ -546,19 +606,22 @@ export default defineComponent({
                     </dialog>
                 </div>
             </div>
-            <!-- <div class="absolute right-8 top-0"></div> -->
 
             <!-- Add new Marker -->
-            <div
+            <!-- <div
                 v-if="markers.length && markers[markers.length - 1].showForm"
                 class="absolute z-10 inset-0 flex items-center justify-center xl:inset-auto xl:transform xl:translate-x-8 xl:flex-initial xl:items-start xl:justify-start xl:bottom-[25%] xl:right-[8%] 2xl:right-[16%]"
+            > -->
+            <div
+                v-if="markers.length && markers[markers.length - 1].showForm"
+                class="absolute z-10 inset-0 flex items-center justify-center pl-[40%]"
             >
                 <div
                     class="bg-white w-96 lg:w-[512px] h-auto rounded-md p-8 relative shadow-xl mx-4"
                 >
                     <form @submit.prevent="saveFormData">
                         <h1 class="pb-4 w-[90%]">Alamat : {{ address }}</h1>
-                        <div>
+                        <div class="pb-2">
                             <label for="name_penerima" class="pb-2"
                                 >Nama Penerima:</label
                             >
@@ -569,36 +632,104 @@ export default defineComponent({
                             />
                             <p
                                 v-if="!formInput.name_penerima"
-                                class="text-red-500 mb-4"
+                                class="text-red-500"
                             >
                                 Nama Penerima tidak boleh kosong
                             </p>
                         </div>
-                        <div>
+                        <div class="w-full pb-2">
                             <label for="name_agent" class="pb-2"
                                 >Nama Agent:</label
                             >
-                            <v-select :options="options" />
+                            <v-select
+                                id="name_agent"
+                                :options="agent"
+                                v-model="formInput.name_agent"
+                                class="w-full"
+                            />
                             <p
                                 v-if="!formInput.name_agent"
-                                class="text-red-500 mb-4"
+                                class="text-red-500"
                             >
                                 Agent tidak boleh kosong
                             </p>
                         </div>
-                        <div>
+                        <div class="w-full pb-2">
+                            <div class="flex gap-4">
+                                <div class="w-1/2">
+                                    <label for="name_satuan" class="pb-2"
+                                        >Satuan:</label
+                                    >
+                                    <v-select
+                                        id="name_satuan"
+                                        :options="satuan"
+                                        v-model="formInput.name_satuan"
+                                        class="w-full"
+                                    />
+                                    <p
+                                        v-if="!formInput.name_satuan"
+                                        class="text-red-500"
+                                    >
+                                        Satuan tidak boleh kosong
+                                    </p>
+                                </div>
+                                <div class="gap-2">
+                                    <div
+                                        v-for="(
+                                            biaya, index
+                                        ) in formInput.biaya"
+                                        :key="index"
+                                    >
+                                        <label
+                                            :for="'biaya' + index"
+                                            class="pb-2"
+                                            >Biaya {{ index + 1 }}:</label
+                                        >
+                                        <input
+                                            :id="'biaya' + index"
+                                            v-model="formInput.biaya[index]"
+                                            class="w-full rounded-lg"
+                                        />
+                                        <p
+                                            v-if="!biaya"
+                                            class="text-red-500 mb-4"
+                                        >
+                                            Biaya tidak boleh kosong
+                                        </p>
+                                    </div>
+                                    <div class="flex gap-2">
+                                        <button
+                                            type="button"
+                                            class="btn bg-green-500 text-white hover:bg-green-700"
+                                            @click="tambahBiaya"
+                                        >
+                                            +
+                                        </button>
+                                        <button
+                                            type="button"
+                                            class="btn bg-red-500 text-white hover:bg-red-700"
+                                            @click="kurangiBiaya"
+                                        >
+                                            -
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="pt-2">
                             <label for="notes" class="pb-2">Catatan:</label>
                             <input
                                 v-model="formInput.notes"
                                 id="notes"
                                 class="w-full mb-2 p-2 border focus:outline-none focus:ring focus:border-blue-300 h-32 md:h-16 rounded-lg"
                             />
-                            <p
+                            <!-- <p
                                 v-if="!formInput.notes"
                                 class="text-red-500 mb-4"
                             >
                                 Catatan tidak boleh kosong
-                            </p>
+                            </p> -->
                         </div>
                         <div class="flex gap-4 justify-center">
                             <button
@@ -612,7 +743,7 @@ export default defineComponent({
                     <div class="absolute top-0 right-1">
                         <button
                             @click="closeShowMarker"
-                            class="absolute top-2 right-2 bg-red-500 text-white cursor-pointer btn btn-circle"
+                            class="absolute top-2 right-2 bg-red-500 text-white cursor-pointer btn btn-circle hover:bg-red-700"
                         >
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"

@@ -10,20 +10,14 @@ import Button from "@/Components/Button.vue";
 // import { GithubIcon } from "@/Components/Icons/brands";
 import "datatables.net-select";
 import "datatables.net-responsive";
-import { library } from "@fortawesome/fontawesome-svg-core";
-import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
-/* import specific icons */
-import { faEdit } from "@fortawesome/free-solid-svg-icons";
 
 DataTable.use(DataTablesCore);
-library.add(faEdit);
 
 let data = ref([]);
 
 const fetchData = async () => {
     const response = await axios.get("/api/role");
     data.value = response.data;
-    console.log(response.data);
 };
 
 onMounted(async () => {
@@ -41,7 +35,8 @@ const columns = [
     { data: "name", title: "Name" },
     { data: "email", title: "Email" },
     // { data: "password", title: "Password" },
-    { data: "role_names", title: "Role" },
+    { data: "role", title: "Role" },
+    { data: "company", title: "Company" },
     {
         data: null,
         title: "Actions",
@@ -53,6 +48,8 @@ const columns = [
         },
     },
 ];
+
+console.log(columns);
 </script>
 
 <style>

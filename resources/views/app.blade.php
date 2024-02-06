@@ -22,9 +22,8 @@
     @inertia
 
     <!-- use the latest vue-select release -->
-    <script src="https://unpkg.com/vue-select@latest"></script>
-    <link rel="stylesheet" href="https://unpkg.com/vue-select@latest/dist/vue-select.css">
-
+    <script src="https://unpkg.com/vue-multiselect@2.1.8"></script>
+    <link rel="stylesheet" href="https://unpkg.com/vue-multiselect@2.1.8/dist/vue-multiselect.min.css">
     <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4="
         crossorigin="anonymous"></script>
 </body>

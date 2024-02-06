@@ -23,7 +23,6 @@ class MdMapsController extends Controller
         //     ->select('md_maps.*', 'roles.name as role_name')
         //     ->get();
 
-        // // Mengembalikan data dalam format JSON
         // return response()->json($maps);
 
         $maps = md_maps::all();
@@ -42,9 +41,11 @@ class MdMapsController extends Controller
     {
         $users = User::all();
 
-        // Mengubah setiap user menjadi array dan menambahkan properti role_names
         $users = $users->map(function ($user) {
-            return array_merge($user->toArray(), ['role_names' => $user->role_names]);
+            return array_merge($user->toArray(), [
+                'role' => $user->role_names,
+                'company' => $user->companies->pluck('name_company'),
+            ]);
         });
 
         // Mengembalikan data dalam format JSON

@@ -34,6 +34,10 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
+        // Load the 'companies' relation for the logged in user
+        $user = Auth::user();
+        $user->load('companies');
+
         if (Auth::user()->hasRole('admin')) {
             return redirect()->to('/maps/user');
         } else if (Auth::user()->hasRole('superuser')) {

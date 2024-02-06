@@ -52,6 +52,11 @@ class User extends Authenticatable
 
     public function companies()
     {
-        return $this->belongsToMany(user_company::class, 'user_companies', 'user_id', 'company_id');
+        return $this->belongsToMany(Company::class, 'user_companies', 'user_id', 'company_id');
+    }
+
+    public function getCompanyNamesAttribute()
+    {
+        return $this->companies->pluck('name');
     }
 }

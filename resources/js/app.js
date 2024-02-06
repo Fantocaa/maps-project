@@ -8,7 +8,7 @@ import { ZiggyVue } from "../../vendor/tightenco/ziggy/dist/vue.m";
 import VueGoogleMaps from "vue-google-maps-community-fork";
 
 const appName =
-    window.document.getElementsByTagName("title")[0]?.innerText || "K UI";
+    window.document.getElementsByTagName("title")[0]?.innerText || "Maps";
 
 createInertiaApp({
     title: (title) => `${title} - ${appName}`,
@@ -29,6 +29,22 @@ createInertiaApp({
             })
             .mount(el);
     },
+    // setup({ el, App, props, plugin }) {
+    //     const app = createApp({ render: () => h(App, props) })
+    //         .use(plugin)
+    //         .use(ZiggyVue, Ziggy)
+    //         .use(VueGoogleMaps, {
+    //             load: {
+    //                 key: "AIzaSyD2dASx5Zo68GSyZuPjUs-4SBLYGsn4OPQ",
+    //                 libraries: "places",
+    //             },
+    //         });
+
+    //     // Register vue-multiselect globally
+    //     app.component("vue-multiselect", window.VueMultiselect.default);
+
+    //     app.mount(el);
+    // },
     progress: {
         color: "#3b82f6",
     },

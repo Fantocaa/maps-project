@@ -5,14 +5,11 @@ import Label from "@/Components/Label.vue";
 import Button from "@/Components/Button.vue";
 import Input from "@/Components/Input.vue";
 import { Link, useForm, usePage } from "@inertiajs/vue3";
-import { ref, onMounted } from "vue";
-import VueSelect from "vue-select";
-
-// const props = defineProps({
-//     mustVerifyEmail: Boolean,
-//     status: String,
-//     user: Object, // Add this line
-// });
+import { ref, onMounted, watch } from "vue";
+import Multiselect from "@vueform/multiselect";
+import "@vueform/multiselect/themes/default.css";
+import vSelect from "vue-select";
+import "vue-select/dist/vue-select.css";
 
 const { props } = usePage();
 let companies = ref([]); // Add this line
@@ -22,17 +19,26 @@ let form = useForm({
     name: ref(props.user.name),
     email: ref(props.user.email),
     role: ref(props.user.roles[0].name),
-    company_id: ref([]), // Add this line
+    // company_id: ref([]),
+    company_id: ref(props.user.companies),
+    // company_id: ref(props.user.companies.map((company) => company.id)),
 });
+
+let company_ids = ref(props.user.companies.map((company) => company.id));
+
+console.log(props.user.companies);
 
 const fetchDataCompany = async () => {
     const response = await axios.get("/api/company");
     companies.value = response.data;
-    console.log(response.data);
 };
 
 onMounted(() => {
     fetchDataCompany();
+});
+
+watch(form.company_id, (newVal) => {
+    company_ids.value = newVal.map((company) => company.id);
 });
 </script>
 
@@ -51,7 +57,11 @@ onMounted(() => {
         <!-- @submit.prevent="form.patch(route('user.update'))" -->
         <form
             @submit.prevent="
-                form.patch(route('user.update', { id: props.user.id }))
+                // form.patch(route('user.update', { id: props.user.id }))
+                form.patch(route('user.update', { id: props.user.id }), {
+                    ...form,
+                    company_id: form.company_id.value,
+                })
             "
             class="mt-6 space-y-6"
         >
@@ -120,10 +130,6 @@ onMounted(() => {
                         'py-2 border-gray-400 rounded-md',
                         'focus:border-gray-400 focus:ring focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-white',
                         'dark:border-gray-600 dark:bg-dark-eval-1 dark:text-gray-300 dark:focus:ring-offset-dark-eval-1 w-full',
-                        {
-                            'px-4': !withIcon,
-                            'pl-11 pr-4': withIcon,
-                        },
                     ]"
                 >
                     <option value="user">User</option>
@@ -137,22 +143,18 @@ onMounted(() => {
 
             <div>
                 <Label for="company" value="Company" />
-                <VueSelect
+                <vSelect
                     id="company"
                     v-model="form.company_id"
                     :options="companies"
-                    multiple
-                    required
-                    :class="[
-                        'py-2 border-gray-400 rounded-md',
-                        'focus:border-gray-400 focus:ring focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-white',
-                        'dark:border-gray-600 dark:bg-dark-eval-1 dark:text-gray-300 dark:focus:ring-offset-dark-eval-1 w-full bg-dark-eval-0',
-                    ]"
                     label="name_company"
+                    searchable="true"
                     track-by="id"
-                    :reduce="(company) => company.id"
+                    multiple
+                    requred
+                    placeholder="Select a company"
+                    class="border-gray-400 rounded-md focus:border-gray-400 focus:ring focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-white dark:border-gray-600 dark:bg-dark-eval-1 dark:text-gray-300 dark:focus:ring-offset-dark-eval-1 w-full bg-dark-eval-0"
                 />
-
                 <InputError class="mt-2" :message="form.errors.company_id" />
             </div>
 
