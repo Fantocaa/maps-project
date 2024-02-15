@@ -33,12 +33,12 @@ const fetchDataAgent = async () => {
 const fetchDataUnit = async () => {
     const response = await axios.get("/api/unit");
     unitData.value = response.data;
-    console.log(response.data);
+    // console.log(response.data);
 };
 
 const fetchDataBiaya = async () => {
-    const response = await axios.get("/api/biaya");
-    unitData.value = response.data;
+    const response = await axios.get("/api/biaya_name");
+    biayaData.value = response.data;
     // console.log(response.data);
 };
 
@@ -120,7 +120,7 @@ const columnsBiaya = [
             return meta.row + 1;
         },
     },
-    { data: "name_biaya", title: "Name" },
+    { data: "biaya_name", title: "Name" },
     {
         data: null,
         title: "Actions",
@@ -145,9 +145,9 @@ const columnsBiaya = [
             <div
                 class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between mb-4"
             >
-                <h2 class="text-xl font-semibold leading-tight">
+                <!-- <h2 class="text-xl font-semibold leading-tight">
                     Manage Company
-                </h2>
+                </h2> -->
 
                 <dialog id="company" class="modal">
                     <div class="modal-box bg-dark-eval-0">
@@ -241,14 +241,14 @@ const columnsBiaya = [
                         </form>
                         <form action="/manage/biaya/new" method="post">
                             <label
-                                for="name_biaya"
+                                for="biaya_name"
                                 class="block text-sm font-medium"
                                 >Biaya Name</label
                             >
                             <input
                                 type="text"
-                                id="name_biaya"
-                                name="name_biaya"
+                                id="biaya_name"
+                                name="biaya_name"
                                 class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm my-4 text-dark-eval-0"
                             />
                             <button type="submit" class="mt-2 btn btn-primary">
@@ -260,7 +260,7 @@ const columnsBiaya = [
             </div>
         </template>
         <template #default>
-            <div class="grid grid-cols-2 gap-6">
+            <div class="grid grid-cols-2 gap-6 mb-16">
                 <div class="border-dark-eval-2 border p-4 rounded-xl">
                     <div class="flex justify-between mb-8 items-center">
                         <h1 class="font-semibold text-xl">Company List</h1>
@@ -321,7 +321,7 @@ const columnsBiaya = [
                             class="btn border border-dark-eval-2"
                             onclick="biaya.showModal()"
                         >
-                            Add New Nama Biaya
+                            Add New Biaya
                         </button>
                     </div>
                     <DataTable

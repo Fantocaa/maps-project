@@ -54,7 +54,8 @@ class MdCompanyController extends Controller
         $company->name_company = $request->name_company;
         $company->save();
 
-        return Inertia::render('Components/Company');
+        // return Inertia::render('Components/Company');
+        return Redirect::route('manage.company');
     }
 
     /**

@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\md_agent;
-use App\Http\Requests\Storemd_agentRequest;
-use App\Http\Requests\Updatemd_agentRequest;
+use App\Models\md_biaya_name;
+use App\Http\Requests\Storemd_biaya_nameRequest;
+use App\Http\Requests\Updatemd_biaya_nameRequest;
 use Inertia\Inertia;
 use Inertia\Response;
 use Illuminate\Http\Request;
@@ -12,14 +12,14 @@ use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Redirect;
 
-class MdAgentController extends Controller
+class MdBiayaNameController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        $maps = md_agent::all();
+        $maps = md_biaya_name::all();
         return response()->json($maps);
     }
 
@@ -30,27 +30,14 @@ class MdAgentController extends Controller
     {
         //
     }
-    
-    public function edit_agent(Request $request, $id): Response
-    {
-        $id = md_agent::find($id);
-
-        return Inertia::render('Components/Agent/EditAgent', [
-            'data' => $id,
-            'mustVerifyEmail' => $request->user() instanceof MustVerifyEmail,
-            'status' => session('status'),
-        ]);
-    }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Storemd_agentRequest $request)
+    public function store(Storemd_biaya_nameRequest $request)
     {
-
-        // dd($request);
-        $company = new md_agent();
-        $company->name_agent = $request->name_agent;
+        $company = new md_biaya_name();
+        $company->biaya_name = $request->biaya_name;
         $company->save();
 
         // return Inertia::render('Components/Company');
@@ -60,29 +47,32 @@ class MdAgentController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(md_agent $md_agent)
+    public function show(md_biaya_name $md_biaya_name)
     {
         //
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(md_agent $md_agent)
+    public function edit_biaya(Request $request, $id): Response
     {
-        //
+        $id = md_biaya_name::find($id);
+
+        return Inertia::render('Components/Biaya/EditBiaya', [
+            'data' => $id,
+            'mustVerifyEmail' => $request->user() instanceof MustVerifyEmail,
+            'status' => session('status'),
+        ]);
     }
 
-    public function update_agent(Updatemd_agentRequest $request): RedirectResponse
+    public function update_biaya(Updatemd_biaya_nameRequest $request): RedirectResponse
     {
-        $agent = md_agent::find($request->id);
+        $agent = md_biaya_name::find($request->id);
 
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
         ]);
 
         if ($agent) {
-            $agent->name_agent = $request->name; // Change this line
+            $agent->biaya_name = $request->name; // Change this line
             $agent->save();
         } else {
             return response()->json(['error' => 'Data not found'], 404);
@@ -92,9 +82,17 @@ class MdAgentController extends Controller
     }
 
     /**
+     * Show the form for editing the specified resource.
+     */
+    public function edit(md_biaya_name $md_biaya_name)
+    {
+        //
+    }
+
+    /**
      * Update the specified resource in storage.
      */
-    public function update(Updatemd_agentRequest $request, md_agent $md_agent)
+    public function update(Updatemd_biaya_nameRequest $request, md_biaya_name $md_biaya_name)
     {
         //
     }
@@ -102,18 +100,18 @@ class MdAgentController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(md_agent $md_agent)
+    public function destroy(md_biaya_name $md_biaya_name)
     {
         //
     }
 
-    public function destroy_agent($id): RedirectResponse
+    public function destroy_biaya($id): RedirectResponse
     {
         // $request->validate([
         //     'password' => ['required', 'current_password'],
         // ]);
 
-        $user = md_agent::find($id);
+        $user = md_biaya_name::find($id);
 
         $user->delete();
 

@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\MdAgentController;
 use App\Http\Controllers\MdBiayaController;
+use App\Http\Controllers\MdBiayaNameController;
 use App\Http\Controllers\MdCompanyController;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Route;
@@ -71,10 +72,10 @@ Route::middleware('auth')->group(function () {
     Route::patch('/manage/unit/update', [MdSatuanController::class, 'update_unit'])->name('unit.update');
     Route::delete('/manage/unit/{id}/delete', [MdSatuanController::class, 'destroy_unit'])->name('unit.destroy');
 
-    Route::post('/manage/biaya/new', [MdBiayaController::class, 'store'])->name('biaya.store');
-    Route::get('/manage/biaya/{id}/edit', [MdBiayaController::class, 'edit_biaya'])->name('biaya.edit');
-    Route::patch('/manage/biaya/update', [MdBiayaController::class, 'update_biaya'])->name('biaya.update');
-    Route::delete('/manage/biaya/{id}/delete', [MdBiayaController::class, 'destroy_biaya'])->name('biaya.destroy');
+    Route::post('/manage/biaya/new', [MdBiayaNameController::class, 'store'])->name('biaya.store');
+    Route::get('/manage/biaya/{id}/edit', [MdBiayaNameController::class, 'edit_biaya'])->name('biaya.edit');
+    Route::patch('/manage/biaya/update', [MdBiayaNameController::class, 'update_biaya'])->name('biaya.update');
+    Route::delete('/manage/biaya/{id}/delete', [MdBiayaNameController::class, 'destroy_biaya'])->name('biaya.destroy');
 });
 
 Route::get('/components/buttons', function () {
@@ -105,6 +106,10 @@ Route::get('/maps/superuser', function () {
 Route::get('/maps/admin', function () {
     return Inertia::render('Maps/MapsAdmin');
 })->middleware(['auth', 'verified', 'role:admin|superadmin'])->name('mapsAdmin');
+
+Route::get('/maps/admincopy', function () {
+    return Inertia::render('Maps/MapsAdmin Copy');
+})->middleware(['auth', 'verified', 'role:admin|superadmin'])->name('mapsAdmincopy');
 
 
 require __DIR__ . '/auth.php';

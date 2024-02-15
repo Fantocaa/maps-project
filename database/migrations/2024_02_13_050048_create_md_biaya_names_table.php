@@ -11,8 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('satuan_biaya_hargas', function (Blueprint $table) {
+        Schema::create('md_biaya_names', function (Blueprint $table) {
             $table->id();
+            $table->string('biaya_name')->nullable();
+            $table->softDeletes();
             $table->timestamps();
         });
     }
@@ -22,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('satuan_biaya_hargas');
+        Schema::dropIfExists('md_biaya_names');
     }
 };

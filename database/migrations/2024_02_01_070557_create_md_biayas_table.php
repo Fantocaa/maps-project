@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('md_biayas', function (Blueprint $table) {
             $table->id();
             $table->integer('id_satuan')->nullable();
+            $table->integer('id_maps')->nullable(); //nanti ini tolong dihapus terlebih dahulu ygy
             $table->string('name_biaya')->nullable();
             $table->string('harga')->nullable();
             $table->softDeletes();

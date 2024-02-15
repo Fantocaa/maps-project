@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\MdAgentController;
 use App\Http\Controllers\MdBiayaController;
+use App\Http\Controllers\MdBiayaNameController;
 use App\Http\Controllers\MdCompanyController;
 use App\Http\Controllers\MdMapsController;
 use App\Http\Controllers\MdSatuanController;
@@ -31,9 +32,11 @@ Route::middleware([])->group(function () {
     Route::delete('/maps/delete/{id}/', [MdMapsController::class, 'delete_maps'])->name('delete_form_maps');
 
     Route::get('/role', [MdMapsController::class, 'has_role'])->name('has_role');
+    Route::get('/biaya', [MdBiayaController::class, 'index'])->name('index.biaya');
 
     Route::get('/company', [MdCompanyController::class, 'index'])->name('index.company');
     Route::get('/agent', [MdAgentController::class, 'index'])->name('index.agent');
     Route::get('/unit', [MdSatuanController::class, 'index'])->name('index.unit');
-    Route::get('/biaya', [MdBiayaController::class, 'index'])->name('index.biaya');
+    Route::get('/biaya_name', [MdBiayaNameController::class, 'index'])->name('index.biaya_name');
+
 });

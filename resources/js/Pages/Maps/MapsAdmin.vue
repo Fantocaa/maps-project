@@ -8,6 +8,7 @@ import { Link } from "@inertiajs/vue3";
 import axios from "axios";
 import vSelect from "vue-select";
 import "vue-select/dist/vue-select.css";
+import { reactive } from "vue";
 
 export default defineComponent({
     emits: ["position_changed", "tilt_changed"],
@@ -22,15 +23,14 @@ export default defineComponent({
         const center = ref({ lat: 0, lng: 0 });
         const markers = ref([]);
         const klikmarker = ref([]);
-        const selectedMarker = ref(true);
+        const selectedMarker = ref(false);
         const mapInstance = ref(null);
         const address = ref("");
         const user = ref([]);
         const agent = ref([]);
         const satuan = ref([]);
+        const biaya = ref([]);
         const matchingUser = ref(null);
-
-        // console.log(props.auth.user.id);
 
         const getCurrentLocation = () => {
             if (markers.value.length > 0) {
@@ -92,14 +92,17 @@ export default defineComponent({
             router.post("/logout");
         };
 
-        const formInput = ref({
-            notes: "",
-            name_penerima: "",
-            name_agent: null,
-            biaya: [""],
-        });
-
         const options = ref([]);
+
+        const formInput = ref([
+            {
+                notes: "",
+                name_penerima: "",
+                name_agent: null,
+                name_satuan: null,
+                biaya: [{ nama: null, harga: "" }],
+            },
+        ]);
 
         const handleMapClick = (event) => {
             const clickedPosition = {
@@ -150,8 +153,20 @@ export default defineComponent({
                     name: clickedMarker.name,
                     date: clickedMarker.date,
                     lokasi: clickedMarker.lokasi,
+                    name_agent: clickedMarker.name_agent,
+                    name_penerima: clickedMarker.name_penerima,
+                    name_company: clickedMarker.name_company,
+                    // satuan: clickedMarker.satuan,
+                    satuan: clickedMarker.satuan.map((satuan) => ({
+                        name_satuan: satuan.name_satuan,
+                        biaya: satuan.biaya.map((biaya) => ({
+                            name_biaya: biaya.name_biaya,
+                            harga: biaya.harga,
+                        })),
+                    })),
                     showForm: true,
                 };
+                // console.log(selectedMarker.value);
                 $("#showmarker").show();
             }
 
@@ -177,6 +192,12 @@ export default defineComponent({
                 .catch((error) => console.error(error));
         };
 
+        const defineSelectedMarkerValueSatuan = (satuan) => {
+            if (selectedMarker.value) {
+                selectedMarker.value.satuan = satuan;
+            }
+        };
+
         const fetchData = async () => {
             try {
                 const response = await fetch("/api/maps");
@@ -188,14 +209,22 @@ export default defineComponent({
                         lng: parseFloat(map.lng),
                     },
                     id: map.id,
-                    label: "",
                     notes: map.notes,
                     name: map.name,
                     date: map.date,
                     lokasi: map.lokasi,
+                    name_agent: map.name_agent,
+                    name_company: map.name_company,
+                    name_penerima: map.name_penerima,
+                    satuan: map.satuan.map((satuan) => ({
+                        name_satuan: satuan.name_satuan,
+                        biaya: satuan.biaya.map((biaya) => ({
+                            name_biaya: biaya.name_biaya,
+                            harga: biaya.harga,
+                        })),
+                    })),
                 }));
-                // Isi options dengan nama dari setiap peta
-                // options.value = data.map((map) => map.name);
+                // console.log(markers.value);
             } catch (error) {
                 console.error("Error fetching data:", error);
             }
@@ -216,11 +245,6 @@ export default defineComponent({
                     roles: user.role,
                     company: user.company,
                 }));
-
-                // // Mencari user yang cocok
-                // const matchingUser = user.value.find(
-                //     (u) => u.id === props.auth.user.id
-                // );
 
                 // Mencari user yang cocok
                 const foundUser = user.value.find(
@@ -255,18 +279,78 @@ export default defineComponent({
                 const response = await axios.get("/api/unit");
                 const data = response.data;
                 satuan.value = data.map((satuan) => satuan.name_satuan);
-                console.log(satuan.value);
+                // console.log(satuan.value);
             } catch (error) {
                 console.error("Error fetching data:", error);
             }
         };
 
-        const tambahBiaya = () => {
-            formInput.value.biaya.push("");
+        const apiData = reactive({
+            biaya: [],
+            // Anda bisa menambahkan ref lain di sini jika perlu
+        });
+
+        const fetchBiaya = async () => {
+            try {
+                const response = await axios.get("/api/biaya_name");
+                const data = response.data;
+                apiData.biaya = data.map((biaya) => biaya.biaya_name);
+                // console.log(apiData.biaya);
+            } catch (error) {
+                console.error("Error fetching data:", error);
+            }
         };
-        const kurangiBiaya = () => {
-            if (formInput.value.biaya.length > 1) {
-                formInput.value.biaya.pop();
+
+        //add new marker
+
+        const tambahItem = () => {
+            formInput.value.push({
+                name_satuan: null,
+                biaya: [{ nama: "", harga: "" }],
+            });
+        };
+
+        const kurangiItem = () => {
+            if (formInput.value.length > 1) {
+                formInput.value.pop();
+            }
+        };
+
+        const tambahBiaya = (index) => {
+            formInput.value[index].biaya.push({ nama: "", harga: "" });
+        };
+
+        const kurangiBiaya = (index) => {
+            if (formInput.value[index].biaya.length > 1) {
+                formInput.value[index].biaya.pop();
+            }
+        };
+
+        //showmarker
+
+        const tambahItemBiaya = () => {
+            selectedMarker.value.satuan.push({
+                name_satuan: null,
+                biaya: [{ name_biaya: "", harga: "" }],
+            });
+        };
+
+        const kurangiItemBiaya = () => {
+            if (selectedMarker.value.satuan.length > 1) {
+                selectedMarker.value.satuan.pop();
+            }
+        };
+
+        const tambahBiayaBiaya = (index) => {
+            selectedMarker.value.satuan[index].biaya.push({
+                name_biaya: "",
+                harga: "",
+            });
+        };
+
+        const kurangiBiayaBiaya = (index) => {
+            if (selectedMarker.value.satuan[index].biaya.length > 1) {
+                selectedMarker.value.satuan[index].biaya.pop();
             }
         };
 
@@ -279,10 +363,10 @@ export default defineComponent({
                     lastMarker.position.lat &&
                     lastMarker.position.lng
                 ) {
-                    if (!formInput.value.notes) {
-                        alert("Description tidak boleh kosong");
-                        return;
-                    }
+                    // if (!formInput.value.notes) {
+                    //     alert("Description tidak boleh kosong");
+                    //     return;
+                    // }
 
                     const formData = {
                         notes: formInput.value.notes,
@@ -290,6 +374,22 @@ export default defineComponent({
                         lng: lastMarker.position.lng,
                         name: props.auth.user.name,
                         lokasi: address.value,
+                        name_penerima: formInput.value.name_penerima,
+                        name_company: matchingUser.value
+                            ? matchingUser.value.company.join(", ")
+                            : "Loading...",
+                        name_agent: formInput.value.name_agent,
+                        satuan: formInput.value.map((item) => {
+                            return {
+                                name_satuan: item.name_satuan,
+                                biaya: item.biaya.map((biaya) => {
+                                    return {
+                                        name_biaya: biaya.nama,
+                                        harga: biaya.harga,
+                                    };
+                                }),
+                            };
+                        }),
                     };
 
                     // Menggunakan Ajax jQuery untuk mengirim data
@@ -304,10 +404,22 @@ export default defineComponent({
                             markers.value[
                                 markers.value.length - 1
                             ].showForm = false;
-                            formInput.value = {
-                                notes: "",
-                            };
+
+                            // Reset formInput.value to its initial state
+                            formInput.value = [
+                                {
+                                    notes: "",
+                                    name_penerima: "",
+                                    name_agent: null,
+                                    name_satuan: null,
+                                    biaya: [{ nama: "", harga: "" }],
+                                },
+                            ];
                             fetchData();
+                            fetchUser();
+                            fetchAgent();
+                            fetchUnit();
+                            fetchBiaya();
                         },
                         error: function (error) {
                             console.error("Error saving data:", error);
@@ -322,10 +434,10 @@ export default defineComponent({
         };
 
         const editSaveFormData = () => {
-            var no = $("#notes").val();
             if (selectedMarker.value && selectedMarker.value.id) {
                 const formData = {
-                    notes: no,
+                    notes: selectedMarker.value.notes,
+                    satuan: selectedMarker.value.satuan,
                 };
 
                 $.ajax({
@@ -337,6 +449,7 @@ export default defineComponent({
                         alert("Data saved : Success", data);
                         // Update the notes of the selectedMarker directly
                         selectedMarker.value.notes = formInput.notes;
+                        selectedMarker.value.satuan = formInput.satuan;
                         $("#showmarker").hide();
                         fetchData();
                     },
@@ -396,14 +509,12 @@ export default defineComponent({
         const closeShowMarker = () => {
             if (markers.value.length > 0) {
                 const lastMarker = markers.value[markers.value.length - 1];
-
                 if (lastMarker.id) {
                     // If the marker has an id, only hide the form
                     lastMarker.showForm = false;
                 } else {
                     // If the marker doesn't have an id, remove it from the array
                     markers.value.pop();
-
                     // Set showForm to false for the new last marker
                     if (markers.value.length > 0) {
                         markers.value[
@@ -412,7 +523,6 @@ export default defineComponent({
                     }
                 }
             }
-
             $("#showmarker").hide();
         };
 
@@ -428,6 +538,8 @@ export default defineComponent({
             fetchAgent();
             fetchUser();
             fetchUnit();
+            fetchBiaya();
+
             // Then call fetchData every 30 seconds
             // setInterval(fetchData, 60000);
             getCurrentLocation();
@@ -442,6 +554,8 @@ export default defineComponent({
             agent,
             center,
             satuan,
+            biaya,
+            apiData,
             logout,
             markers,
             address,
@@ -450,8 +564,11 @@ export default defineComponent({
             kurangiBiaya,
             formInput,
             tambahBiaya,
+            tambahItem,
+            kurangiItem,
             closeModal,
             klikmarker,
+            defineSelectedMarkerValueSatuan,
             handleMapClick,
             handleMarkerClick,
             deleteSaveFormData,
@@ -460,6 +577,10 @@ export default defineComponent({
             selectedMarker,
             mapWasMounted,
             saveFormData,
+            tambahItemBiaya,
+            kurangiItemBiaya,
+            tambahBiayaBiaya,
+            kurangiBiayaBiaya,
             options,
         };
     },
@@ -469,7 +590,9 @@ export default defineComponent({
 <template>
     <Head title="Maps" />
     <div class="mx-auto relative h-full">
-        <div class="lg:hidden top-4 md:top-4 w-full px-4 md:px-8 pt-6 lg:pt-0">
+        <div
+            class="lg:hidden top-4 md:top-4 w-full px-4 md:px-8 pt-6 lg:pt-0 text-sm"
+        >
             <div class="relative mb-6">
                 <img
                     src="/images/icon/search.svg"
@@ -479,7 +602,7 @@ export default defineComponent({
                 <GMapAutocomplete
                     placeholder="Cari Lokasi"
                     @place_changed="setPlace"
-                    class="px-4 py-2 md:py-4 w-full md:w-[576px] xl:w-[800px] rounded-full focus:outline-none focus:ring focus:border-blue-300 lg:shadow-xl border pl-14 text-lg"
+                    class="px-4 py-2 md:py-[10px] w-64 md:w-[576px] xl:w-[800px] rounded-full focus:outline-none focus:ring focus:border-blue-300 lg:shadow-xl border pl-14 text:sm lg:text-lg"
                 >
                 </GMapAutocomplete>
             </div>
@@ -487,7 +610,7 @@ export default defineComponent({
         <GMapMap
             api-key="AIzaSyD2dASx5Zo68GSyZuPjUs-4SBLYGsn4OPQ"
             id="google-map"
-            class="w-full h-[60vh] lg:h-screen"
+            class="w-full h-[70vh] md:h-[75vh] lg:h-screen"
             :center="center"
             :zoom="zoom"
             :options="{ disableDefaultUI: true }"
@@ -525,11 +648,11 @@ export default defineComponent({
                 </div>
 
                 <div
-                    class="pt-6 lg:pt-0 lg:absolute bottom-8 right-2 md:bottom-0 md:top-6 md:right-8 z-10 flex justify-end px-4"
+                    class="pt-6 md:pt-0 absolute right-2 top-0 md:top-6 md:right-8 z-10 flex justify-end md:px-0"
                 >
                     <!-- Open the modal using ID.showModal() method -->
                     <button
-                        class="bg-red-600 border-none text-white hover:bg-red-700 text-base pl-10 relative rounded-full btn shadow-xl"
+                        class="bg-red-600 border-none text-white hover:bg-red-700 text-base pl-10 relative rounded-full btn px-4 shadow-xl py-2"
                         onclick="my_modal_2.showModal()"
                     >
                         <img
@@ -613,8 +736,8 @@ export default defineComponent({
                 class="absolute z-10 inset-0 flex items-center justify-center xl:inset-auto xl:transform xl:translate-x-8 xl:flex-initial xl:items-start xl:justify-start xl:bottom-[25%] xl:right-[8%] 2xl:right-[16%]"
             > -->
             <div
-                v-if="markers.length && markers[markers.length - 1].showForm"
-                class="absolute z-10 inset-0 flex items-center justify-center pl-[40%]"
+                v-show="markers.length && markers[markers.length - 1].showForm"
+                class="absolute z-10 inset-0 flex items-center justify-center 2xl:pl-[40%] text-xs pt-[86px] md:pt-24 lg:pt-0"
             >
                 <div
                     class="bg-white w-96 lg:w-[512px] h-auto rounded-md p-8 relative shadow-xl mx-4"
@@ -628,7 +751,8 @@ export default defineComponent({
                             <input
                                 v-model="formInput.name_penerima"
                                 id="name_penerima"
-                                class="w-full mb-2 p-2 border focus:outline-none focus:ring focus:border-blue-300 rounded-lg"
+                                class="w-full mb-2 p-2 border focus:outline-none focus:ring focus:border-blue-300 rounded-lg text-xs"
+                                placeholder="isi nama penerima"
                             />
                             <p
                                 v-if="!formInput.name_penerima"
@@ -654,64 +778,176 @@ export default defineComponent({
                                 Agent tidak boleh kosong
                             </p>
                         </div>
-                        <div class="w-full pb-2">
-                            <div class="flex gap-4">
-                                <div class="w-1/2">
-                                    <label for="name_satuan" class="pb-2"
-                                        >Satuan:</label
-                                    >
-                                    <v-select
-                                        id="name_satuan"
-                                        :options="satuan"
-                                        v-model="formInput.name_satuan"
-                                        class="w-full"
-                                    />
-                                    <p
-                                        v-if="!formInput.name_satuan"
-                                        class="text-red-500"
-                                    >
-                                        Satuan tidak boleh kosong
-                                    </p>
-                                </div>
-                                <div class="gap-2">
-                                    <div
-                                        v-for="(
-                                            biaya, index
-                                        ) in formInput.biaya"
-                                        :key="index"
-                                    >
-                                        <label
-                                            :for="'biaya' + index"
-                                            class="pb-2"
-                                            >Biaya {{ index + 1 }}:</label
-                                        >
-                                        <input
-                                            :id="'biaya' + index"
-                                            v-model="formInput.biaya[index]"
-                                            class="w-full rounded-lg"
-                                        />
-                                        <p
-                                            v-if="!biaya"
-                                            class="text-red-500 mb-4"
-                                        >
-                                            Biaya tidak boleh kosong
-                                        </p>
+                        <div class="max-h-28 md:max-h-80 overflow-y-auto">
+                            <div
+                                class="pb-2"
+                                v-for="(item, index) in formInput"
+                                :key="index"
+                            >
+                                <div>
+                                    <div class="flex gap-2 md:gap-4 pb-2">
+                                        <div class="w-full">
+                                            <label
+                                                :for="'name_satuan' + index"
+                                                class="pb-2"
+                                                >Satuan:</label
+                                            >
+                                            <v-select
+                                                :id="'name_satuan' + index"
+                                                :options="satuan"
+                                                v-model="item.name_satuan"
+                                                class="w-full"
+                                            />
+                                            <p
+                                                v-if="!item.name_satuan"
+                                                class="text-red-500"
+                                            >
+                                                Satuan tidak boleh kosong
+                                            </p>
+                                        </div>
+                                        <div class="flex pt-2 gap-2 pr-2">
+                                            <button
+                                                type="button"
+                                                class="btn bg-green-500 text-white hover:bg-green-700"
+                                                @click="tambahItem"
+                                            >
+                                                +
+                                            </button>
+                                            <button
+                                                type="button"
+                                                class="btn bg-red-500 text-white hover:bg-red-700"
+                                                @click="kurangiItem"
+                                            >
+                                                -
+                                            </button>
+                                        </div>
                                     </div>
-                                    <div class="flex gap-2">
-                                        <button
-                                            type="button"
-                                            class="btn bg-green-500 text-white hover:bg-green-700"
-                                            @click="tambahBiaya"
+
+                                    <div class="flex gap-4">
+                                        <div class="flex flex-col w-full">
+                                            <div
+                                                v-for="(
+                                                    biaya, biayaIndex
+                                                ) in formInput[index].biaya"
+                                                :key="biayaIndex"
+                                                class="w-full flex gap-2"
+                                            >
+                                                <div
+                                                    class="lg:grid grid-cols-2 gap-4"
+                                                >
+                                                    <div class="pb-2">
+                                                        <label
+                                                            :for="
+                                                                'biaya' +
+                                                                index +
+                                                                '-' +
+                                                                biayaIndex
+                                                            "
+                                                            class=""
+                                                            >Nama Biaya
+                                                            {{
+                                                                biayaIndex + 1
+                                                            }}:</label
+                                                        >
+                                                        <v-select
+                                                            :id="
+                                                                'biaya' +
+                                                                index +
+                                                                '-' +
+                                                                biayaIndex
+                                                            "
+                                                            v-model="biaya.nama"
+                                                            :options="
+                                                                apiData.biaya
+                                                            "
+                                                            class="w-full rounded-lg text-xs"
+                                                        />
+                                                        <p
+                                                            v-if="!biaya.nama"
+                                                            class="text-red-500"
+                                                        >
+                                                            Nama Biaya tidak
+                                                            boleh kosong
+                                                        </p>
+                                                    </div>
+                                                    <div class="pb-2">
+                                                        <label
+                                                            :for="
+                                                                'biaya' +
+                                                                index +
+                                                                '-' +
+                                                                biayaIndex
+                                                            "
+                                                            class=""
+                                                            >Harga Biaya
+                                                            {{
+                                                                biayaIndex + 1
+                                                            }}:</label
+                                                        >
+                                                        <input
+                                                            :id="
+                                                                'biaya' +
+                                                                index +
+                                                                '-' +
+                                                                biayaIndex
+                                                            "
+                                                            v-model="
+                                                                biaya.harga
+                                                            "
+                                                            class="w-full rounded-lg text-xs"
+                                                            placeholder="isi Nama Harga"
+                                                        />
+                                                        <p
+                                                            v-if="!biaya.harga"
+                                                            class="text-red-500"
+                                                        >
+                                                            Harga Biaya tidak
+                                                            boleh kosong
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                                <div
+                                                    class="flex gap-2 pt-2 pr-2 lg:hidden"
+                                                >
+                                                    <button
+                                                        type="button"
+                                                        class="btn bg-green-500 text-white hover:bg-green-700"
+                                                        @click="
+                                                            tambahBiaya(index)
+                                                        "
+                                                    >
+                                                        +
+                                                    </button>
+                                                    <button
+                                                        type="button"
+                                                        class="btn bg-red-500 text-white hover:bg-red-700"
+                                                        @click="
+                                                            kurangiBiaya(index)
+                                                        "
+                                                    >
+                                                        -
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div
+                                            class="gap-2 pt-2 pr-2 hidden lg:flex"
                                         >
-                                            +
-                                        </button>
-                                        <button
-                                            type="button"
-                                            class="btn bg-red-500 text-white hover:bg-red-700"
-                                            @click="kurangiBiaya"
-                                        >
-                                            -
-                                        </button>
+                                            <button
+                                                type="button"
+                                                class="btn bg-green-500 text-white hover:bg-green-700"
+                                                @click="tambahBiaya(index)"
+                                            >
+                                                +
+                                            </button>
+                                            <button
+                                                type="button"
+                                                class="btn bg-red-500 text-white hover:bg-red-700"
+                                                @click="kurangiBiaya(index)"
+                                            >
+                                                -
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -719,10 +955,10 @@ export default defineComponent({
 
                         <div class="pt-2">
                             <label for="notes" class="pb-2">Catatan:</label>
-                            <input
+                            <textarea
                                 v-model="formInput.notes"
                                 id="notes"
-                                class="w-full mb-2 p-2 border focus:outline-none focus:ring focus:border-blue-300 h-32 md:h-16 rounded-lg"
+                                class="w-full mb-2 p-2 border focus:outline-none focus:ring focus:border-blue-300 h-16 md:h-16 rounded-lg text-sm"
                             />
                             <!-- <p
                                 v-if="!formInput.notes"
@@ -763,31 +999,204 @@ export default defineComponent({
                     </div>
                 </div>
             </div>
-
             <!-- Show Marker -->
             <div
-                v-if="selectedMarker"
+                v-show="selectedMarker"
                 id="showmarker"
-                :data-id="selectedMarker ? selectedMarker.id : ''"
-                class="absolute z-10 inset-0 flex items-center justify-center"
+                :data-id="
+                    selectedMarker.value && selectedMarker.value.satuan
+                        ? selectedMarker.value.satuan
+                        : ''
+                "
+                class="absolute z-10 inset-0 flex items-center justify-center 2xl:pl-[40%] text-xs pt-64 md:pt-40 lg:pt-0"
                 style="display: none"
             >
                 <div
-                    class="bg-white w-full max-w-md h-auto rounded-xl p-8 relative shadow-xl mx-4"
+                    class="bg-white w-full lg:w-[512px] h-auto rounded-xl p-8 relative shadow-xl mx-4"
                 >
                     <form @submit.prevent="editSaveFormData">
                         <h1 class="pb-4 w-[90%]">
                             Alamat : {{ selectedMarker.lokasi }}
                         </h1>
+                        <h1 class="pb-4 w-[90%]">
+                            Nama Penerima : {{ selectedMarker.name_penerima }}
+                        </h1>
+                        <h1 class="pb-4 w-[90%]">
+                            Nama Agent : {{ selectedMarker.name_agent }}
+                        </h1>
+                        <div class="max-h-80 overflow-y-auto">
+                            <div
+                                class="pb-2"
+                                v-for="(
+                                    satuanItem, index
+                                ) in selectedMarker.satuan"
+                                :key="index"
+                            >
+                                <div>
+                                    <div class="flex gap-2 md:gap-4 pb-2">
+                                        <div class="w-full">
+                                            <label
+                                                :for="'name_satuan' + index"
+                                                class="pb-2"
+                                                >Satuan:</label
+                                            >
+                                            <v-select
+                                                :id="'name_satuan' + index"
+                                                :options="satuan"
+                                                v-model="satuanItem.name_satuan"
+                                                class="w-full"
+                                            />
+                                            <p
+                                                v-if="!satuanItem.name_satuan"
+                                                class="text-red-500"
+                                            >
+                                                Satuan tidak boleh kosong
+                                            </p>
+                                        </div>
+                                        <div class="flex pt-2 gap-2 pr-2">
+                                            <button
+                                                type="button"
+                                                class="btn bg-green-500 text-white hover:bg-green-700"
+                                                @click="tambahItemBiaya"
+                                            >
+                                                +
+                                            </button>
+                                            <button
+                                                type="button"
+                                                class="btn bg-red-500 text-white hover:bg-red-700"
+                                                @click="kurangiItemBiaya"
+                                            >
+                                                -
+                                            </button>
+                                        </div>
+                                    </div>
 
-                        <label for="notes">Description:</label>
+                                    <div class="flex gap-4">
+                                        <div class="flex flex-col w-full">
+                                            <div
+                                                v-for="(
+                                                    biayaItem, biayaIndex
+                                                ) in satuanItem.biaya"
+                                                :key="biayaIndex"
+                                                class="w-full grid grid-cols-2 gap-2"
+                                            >
+                                                <div class="pb-2">
+                                                    <label
+                                                        :for="
+                                                            'biaya' +
+                                                            index +
+                                                            '-' +
+                                                            biayaIndex
+                                                        "
+                                                        class=""
+                                                        >Nama Biaya
+                                                        {{
+                                                            biayaIndex + 1
+                                                        }}:</label
+                                                    >
+                                                    <!-- <input
+                                                        :id="
+                                                            'biaya' +
+                                                            index +
+                                                            '-' +
+                                                            biayaIndex
+                                                        "
+                                                        v-model="
+                                                            biayaItem.name_biaya
+                                                        "
+                                                        class="w-full rounded-lg text-xs"
+                                                        placeholder="isi Nama Biaya"
+                                                    /> -->
+                                                    <v-select
+                                                        :id="
+                                                            'biaya' +
+                                                            index +
+                                                            '-' +
+                                                            biayaIndex
+                                                        "
+                                                        v-model="
+                                                            biayaItem.name_biaya
+                                                        "
+                                                        :options="apiData.biaya"
+                                                        class="w-full rounded-lg text-xs"
+                                                    />
+                                                    <p
+                                                        v-if="
+                                                            !biayaItem.name_biaya
+                                                        "
+                                                        class="text-red-500"
+                                                    >
+                                                        Nama Biaya tidak boleh
+                                                        kosong
+                                                    </p>
+                                                </div>
+                                                <div class="pb-2">
+                                                    <label
+                                                        :for="
+                                                            'biaya' +
+                                                            index +
+                                                            '-' +
+                                                            biayaIndex
+                                                        "
+                                                        class=""
+                                                        >Harga Biaya
+                                                        {{
+                                                            biayaIndex + 1
+                                                        }}:</label
+                                                    >
+                                                    <input
+                                                        :id="
+                                                            'biaya' +
+                                                            index +
+                                                            '-' +
+                                                            biayaIndex
+                                                        "
+                                                        v-model="
+                                                            biayaItem.harga
+                                                        "
+                                                        class="w-full rounded-lg text-xs"
+                                                        placeholder="isi Nama Harga"
+                                                    />
+                                                    <p
+                                                        v-if="!biayaItem.harga"
+                                                        class="text-red-500"
+                                                    >
+                                                        Harga Biaya tidak boleh
+                                                        kosong
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="flex gap-2 pt-2 pr-2">
+                                            <button
+                                                type="button"
+                                                class="btn bg-green-500 text-white hover:bg-green-700"
+                                                @click="tambahBiayaBiaya(index)"
+                                            >
+                                                +
+                                            </button>
+                                            <button
+                                                type="button"
+                                                class="btn bg-red-500 text-white hover:bg-red-700"
+                                                @click="
+                                                    kurangiBiayaBiaya(index)
+                                                "
+                                            >
+                                                -
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
 
+                        <label for="notes">Catatan:</label>
                         <textarea
                             id="notes"
-                            class="w-full mb-2 p-2 border h-32 md:h-56"
-                        >
-                                {{ selectedMarker ? selectedMarker.notes : "" }}
-                            </textarea
+                            class="w-full mb-2 p-2 border h-32 md:h-16"
+                            >{{
+                                selectedMarker ? selectedMarker.notes : ""
+                            }}</textarea
                         >
 
                         <div
@@ -809,13 +1218,16 @@ export default defineComponent({
                         </div>
                         <div class="mt-8">
                             <h1>Dibuat oleh : {{ selectedMarker.name }}</h1>
+                            <h1>
+                                Perusahaan : {{ selectedMarker.name_company }}
+                            </h1>
                             <span>Dibuat pada : {{ selectedMarker.date }}</span>
                         </div>
                     </form>
                     <div class="absolute top-0 right-1">
                         <button
                             @click="closeShowMarker"
-                            class="absolute top-2 right-2 bg-red-500 text-white cursor-pointer btn btn-circle"
+                            class="absolute top-2 right-2 bg-red-500 text-white cursor-pointer btn btn-circle hover:bg-red-700"
                         >
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"

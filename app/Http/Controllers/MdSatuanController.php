@@ -31,6 +31,17 @@ class MdSatuanController extends Controller
         //
     }
 
+    public function edit_unit(Request $request, $id): Response
+    {
+        $id = md_satuan::find($id);
+
+        return Inertia::render('Components/Satuan/EditSatuan', [
+            'data' => $id,
+            'mustVerifyEmail' => $request->user() instanceof MustVerifyEmail,
+            'status' => session('status'),
+        ]);
+    }
+
     /**
      * Store a newly created resource in storage.
      */
@@ -40,7 +51,26 @@ class MdSatuanController extends Controller
         $company->name_satuan = $request->name_satuan;
         $company->save();
 
-        return Inertia::render('Components/Company');
+        // return Inertia::render('Components/Company');
+        return Redirect::route('manage.company');
+    }
+
+    public function update_unit(Updatemd_satuanRequest $request): RedirectResponse
+    {
+        $agent = md_satuan::find($request->id);
+
+        $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+        ]);
+
+        if ($agent) {
+            $agent->name_satuan = $request->name; // Change this line
+            $agent->save();
+        } else {
+            return response()->json(['error' => 'Data not found'], 404);
+        }
+
+        return Redirect::route('manage.company');
     }
 
     /**
@@ -73,5 +103,18 @@ class MdSatuanController extends Controller
     public function destroy(md_satuan $md_satuan)
     {
         //
+    }
+
+    public function destroy_unit($id): RedirectResponse
+    {
+        // $request->validate([
+        //     'password' => ['required', 'current_password'],
+        // ]);
+
+        $user = md_satuan::find($id);
+
+        $user->delete();
+
+        return Redirect::to('/manage/company');
     }
 }

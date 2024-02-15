@@ -5,6 +5,11 @@ namespace App\Http\Controllers;
 use App\Models\md_maps;
 use App\Http\Requests\Storemd_mapsRequest;
 use App\Http\Requests\Updatemd_mapsRequest;
+use App\Models\md_agent;
+use App\Models\md_biaya;
+use App\Models\md_biaya_name;
+use App\Models\md_company;
+use App\Models\md_satuan;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
@@ -18,14 +23,51 @@ class MdMapsController extends Controller
      */
     public function index()
     {
-        // $maps = md_maps::join('model_has_roles', 'md_maps.id', '=', 'model_has_roles.model_id')
-        //     ->join('roles', 'model_has_roles.role_id', '=', 'roles.id')
-        //     ->select('md_maps.*', 'roles.name as role_name')
-        //     ->get();
+        $maps = md_maps::join('md_agents', 'md_maps.id_agent', '=', 'md_agents.id')
+                        ->join('md_companies', 'md_maps.id_perusahaan', '=', 'md_companies.id')
+                        ->select('md_maps.*', 'md_agents.name_agent as name_agent', 'md_companies.name_company as name_company')
+                        ->get();
 
-        // return response()->json($maps);
+        foreach ($maps as $map) {
+            $satuans = md_satuan::whereHas('biaya', function ($query) use ($map) {
+                $query->where('id_maps', $map->id);
+            })->get();
+        
+            $map->satuan = $satuans->map(function ($satuan) use ($map) {
+                $biayas = md_biaya::where('id_maps', $map->id)
+                                  ->where('id_satuan', $satuan->id)
+                                  ->join('md_biaya_names', 'md_biayas.name_biaya', '=', 'md_biaya_names.id')
+                                  ->select('md_biayas.*', 'md_biaya_names.biaya_name as biaya_name')
+                                  ->get();
+                return [
+                    'name_satuan' => $satuan->name_satuan,
+                    // 'biaya' => $biayas->map(function ($biaya) {
+                    //     return [
+                    //         'name_biaya' => $biaya->name_biaya,
+                    //         'harga' => $biaya->harga
+                    //     ];
+                    // })
+                    'biaya' => $biayas->map(function ($biaya) {
+                        // Get the id from md_biaya_names
+                        // $biaya_name_id = md_biaya_name::where('biaya_name', $biaya->name_biaya)->first()->id;
 
-        $maps = md_maps::all();
+                        // $biaya_name = md_biaya_name::where('biaya_name', $biaya->name_biaya)->first();
+                        // if ($biaya_name) {
+                        //     $biaya_name_id = $biaya_name->id;
+                        //     // ...
+                        // } else {
+                           
+                        // }
+
+                        return [
+                            'name_biaya' => $biaya->biaya_name,
+                            'harga' => $biaya->harga
+                        ];
+                    })
+                ];
+            });
+        }
+        // $maps = md_maps::all();
         return response()->json($maps);
     }
 
@@ -57,6 +99,20 @@ class MdMapsController extends Controller
      */
     public function store(Storemd_mapsRequest $request)
     {
+        // dd($request);
+
+        $company = md_company::firstWhere('name_company', $request->name_company);
+        if (!$company) {
+            // Handle the case where the agent is not found
+            return;
+        }
+
+        $agent = md_agent::firstWhere('name_agent', $request->name_agent);
+        if (!$agent) {
+            // Handle the case where the agent is not found
+            return;
+        }
+
         $form = new md_maps();
         $form->notes = $request->notes;
         $form->lat = $request->lat;
@@ -64,8 +120,24 @@ class MdMapsController extends Controller
         $form->lokasi = $request->lokasi;
         $form->name = $request->name;
         $form->date = Carbon::now()->toDateString();
-        // dd($form);
+        $form->id_agent = $agent->id; 
+        $form->id_perusahaan = $company->id; 
+        $form->name_penerima = $request->name_penerima;
         $form->save();
+
+        foreach ($request->satuan as $satuanData) {
+            $satuan = md_satuan::firstWhere('name_satuan', $satuanData['name_satuan']);
+            if ($satuan) {
+                foreach ($satuanData['biaya'] as $biayaData) {
+                    $biaya = new md_biaya();
+                    $biaya->id_maps = $form->id; // Mengatur id_maps ke id dari md_maps yang baru saja dibuat
+                    $biaya->id_satuan = $satuan->id; // Mengatur id_satuan ke id dari md_satuan yang ditemukan
+                    $biaya->name_biaya = $biayaData['name_biaya'];
+                    $biaya->harga = $biayaData['harga'];
+                    $biaya->save();
+                }
+            }
+        }
     }
 
     /**
@@ -93,18 +165,49 @@ class MdMapsController extends Controller
 
     public function update_maps(Updatemd_mapsRequest $request, md_maps $md_maps)
     {
-        // dd(request($request));
+        // dd($request);
         $form = md_maps::find($request->id);
 
         // Tambahkan pengecekan untuk memastikan objek ditemukan sebelum memanipulasinya
-        if ($form) {
-            $form->notes = $request->notes;
-            // $form->lat = $request->lat;
-            // $form->lng = $request->lng;
-            $form->save();
-        } else {
+        if (!$form) {
             return response()->json(['error' => 'Data not found'], 404);
         }
+        
+        if (!empty($request->satuan)) {
+            foreach ($request->satuan as $satuanData) {
+                if (isset($satuanData['name_satuan'])) {
+                    $satuan = md_satuan::firstWhere('name_satuan', $satuanData['name_satuan']);
+                    if ($satuan && isset($satuanData['biaya']) && is_array($satuanData['biaya'])) {
+                        foreach ($satuanData['biaya'] as $biayaData) {
+                            if (isset($biayaData['name_biaya'], $biayaData['harga'])) {
+                                $biayaNameEntry = md_biaya_name::firstWhere('biaya_name', $biayaData['name_biaya']);
+                            
+                                if ($biayaNameEntry) {
+                                    // Mencari entri md_biaya yang sudah ada dengan id_maps, id_satuan, dan name_biaya yang sama
+                                    $existingBiaya = md_biaya::where('id_maps', $form->id)
+                                        ->where('id_satuan', $satuan->id)
+                                        ->where('name_biaya', $biayaNameEntry->id)
+                                        ->first();
+                            
+                                    if (!$existingBiaya) {
+                                        // Jika entri md_biaya tidak ditemukan, buat entri baru
+                                        $biaya = new md_biaya();
+                                        $biaya->id_maps = $form->id;
+                                        $biaya->id_satuan = $satuan->id;
+                                        $biaya->name_biaya = $biayaNameEntry->id;
+                                        $biaya->harga = $biayaData['harga'];
+                                        $biaya->save();
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        
+        $form->notes = $request->notes;
+        $form->save();
     }
 
     public function delete_maps($id)

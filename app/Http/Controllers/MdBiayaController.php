@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\md_biaya;
 use App\Http\Requests\Storemd_biayaRequest;
 use App\Http\Requests\Updatemd_biayaRequest;
+use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 
 class MdBiayaController extends Controller
@@ -14,10 +15,14 @@ class MdBiayaController extends Controller
      */
     public function index()
     {
-        $maps = md_biaya::all();
-        return response()->json($maps);
+        $biaya = md_biaya::join('md_satuans', 'md_biayas.id_satuan', '=', 'md_satuans.id')
+                        ->join('md_biaya_names', 'md_biayas.name_biaya', '=', 'md_biaya_names.id')
+                        ->select('md_biayas.*', 'md_satuans.name_satuan as name_satuan', 'md_biaya_names.biaya_name as biaya_name')
+                        ->get();
+        // $biaya = md_biaya::all();
+        return response()->json($biaya);
     }
-
+    
     /**
      * Show the form for creating a new resource.
      */
@@ -31,11 +36,11 @@ class MdBiayaController extends Controller
      */
     public function store(Storemd_biayaRequest $request)
     {
-        $company = new md_biaya();
-        $company->name_biaya = $request->name_biaya;
-        $company->save();
+        // $company = new md_biaya();
+        // $company->name_biaya = $request->name_biaya;
+        // $company->save();
 
-        return Inertia::render('Components/Company');
+        // return Inertia::render('Components/Company');
     }
 
     /**
