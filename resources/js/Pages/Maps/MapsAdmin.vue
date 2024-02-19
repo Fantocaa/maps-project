@@ -755,7 +755,7 @@ export default defineComponent({
                 >
                     <form @submit.prevent="saveFormData">
                         <h1 class="pb-4 w-[90%]">Alamat : {{ address }}</h1>
-                        <div class="overflow-y-scroll max-h-[448px]">
+                        <div class="overflow-y-scroll max-h-96">
                             <div class="pb-2">
                                 <label for="name_penerima" class="pb-2"
                                     >Nama Penerima:</label
@@ -1244,44 +1244,40 @@ export default defineComponent({
                                                         </button>
                                                     </div>
                                                 </div>
-                                                <div
-                                                    class="gap-2 pt-2 pr-2 hidden lg:flex"
+                                            </div>
+                                            <div
+                                                class="gap-2 pt-2 pr-2 hidden lg:flex"
+                                            >
+                                                <button
+                                                    v-if="
+                                                        matchingUser &&
+                                                        matchingUser.company.includes(
+                                                            selectedMarker.name_company
+                                                        )
+                                                    "
+                                                    type="button"
+                                                    class="btn bg-green-500 text-white hover:bg-green-700"
+                                                    @click="
+                                                        tambahBiayaBiaya(index)
+                                                    "
                                                 >
-                                                    <button
-                                                        v-if="
-                                                            matchingUser &&
-                                                            matchingUser.company.includes(
-                                                                selectedMarker.name_company
-                                                            )
-                                                        "
-                                                        type="button"
-                                                        class="btn bg-green-500 text-white hover:bg-green-700"
-                                                        @click="
-                                                            tambahBiayaBiaya(
-                                                                index
-                                                            )
-                                                        "
-                                                    >
-                                                        +
-                                                    </button>
-                                                    <button
-                                                        v-if="
-                                                            matchingUser &&
-                                                            matchingUser.company.includes(
-                                                                selectedMarker.name_company
-                                                            )
-                                                        "
-                                                        type="button"
-                                                        class="btn bg-red-500 text-white hover:bg-red-700"
-                                                        @click="
-                                                            kurangiBiayaBiaya(
-                                                                index
-                                                            )
-                                                        "
-                                                    >
-                                                        -
-                                                    </button>
-                                                </div>
+                                                    +
+                                                </button>
+                                                <button
+                                                    v-if="
+                                                        matchingUser &&
+                                                        matchingUser.company.includes(
+                                                            selectedMarker.name_company
+                                                        )
+                                                    "
+                                                    type="button"
+                                                    class="btn bg-red-500 text-white hover:bg-red-700"
+                                                    @click="
+                                                        kurangiBiayaBiaya(index)
+                                                    "
+                                                >
+                                                    -
+                                                </button>
                                             </div>
                                         </div>
                                     </div>

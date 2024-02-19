@@ -138,7 +138,16 @@ class MdMapsController extends Controller
                     $biaya = new md_biaya();
                     $biaya->id_maps = $form->id; // Mengatur id_maps ke id dari md_maps yang baru saja dibuat
                     $biaya->id_satuan = $satuan->id; // Mengatur id_satuan ke id dari md_satuan yang ditemukan
-                    $biaya->name_biaya = $biayaData['name_biaya'];
+                    // $biaya->name_biaya = $biayaData['id'];
+
+                    // Find the biaya_name by its name and set its id
+                    if (isset($biayaData['name_biaya'])) {
+                        $biaya_name = md_biaya_name::firstWhere('biaya_name', $biayaData['name_biaya']);
+                        if ($biaya_name) {
+                            $biaya->name_biaya = $biaya_name->id;
+                        }
+                    }
+
                     $biaya->harga = $biayaData['harga'];
                     $biaya->save();
                 }
