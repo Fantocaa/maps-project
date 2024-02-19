@@ -4,10 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Company extends Model
+class view_company extends Model
 {
     use HasFactory;
-    protected $table = 'md_companies';
+    use SoftDeletes;
     
 }
+

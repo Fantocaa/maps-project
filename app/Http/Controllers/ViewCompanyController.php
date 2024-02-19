@@ -2,19 +2,18 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\user_company;
-use App\Http\Requests\Storeuser_companyRequest;
-use App\Http\Requests\Updateuser_companyRequest;
+use App\Models\view_company;
+use App\Http\Requests\Storeview_companyRequest;
+use App\Http\Requests\Updateview_companyRequest;
 
-class UserCompanyController extends Controller
+class ViewCompanyController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        $user = user_company::all();
-        return response()->json($user);
+        //
     }
 
     /**
@@ -28,7 +27,7 @@ class UserCompanyController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Storeuser_companyRequest $request)
+    public function store(Storeview_companyRequest $request)
     {
         //
     }
@@ -36,7 +35,7 @@ class UserCompanyController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(user_company $user_company)
+    public function show(view_company $view_company)
     {
         //
     }
@@ -44,7 +43,7 @@ class UserCompanyController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(user_company $user_company)
+    public function edit(view_company $view_company)
     {
         //
     }
@@ -52,7 +51,7 @@ class UserCompanyController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Updateuser_companyRequest $request, user_company $user_company)
+    public function update(Updateview_companyRequest $request, view_company $view_company)
     {
         //
     }
@@ -60,7 +59,7 @@ class UserCompanyController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(user_company $user_company)
+    public function destroy(view_company $view_company)
     {
         //
     }

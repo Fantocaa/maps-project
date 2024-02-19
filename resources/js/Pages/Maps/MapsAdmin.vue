@@ -198,10 +198,55 @@ export default defineComponent({
             }
         };
 
+        const fetchUser = async () => {
+            try {
+                const response = await axios.get("/api/role");
+                const data = response.data;
+                user.value = data.map((user) => ({
+                    id: user.id,
+                    name: user.name,
+                    email: user.email,
+                    email_verified_at: user.email_verified_at,
+                    created_at: user.created_at,
+                    updated_at: user.updated_at,
+                    deleted_at: user.deleted_at,
+                    roles: user.role,
+                    company: user.company,
+                    view_company: user.view_company,
+                }));
+
+                // Mencari user yang cocok
+                const foundUser = user.value.find(
+                    (u) => u.id === props.auth.user.id
+                );
+
+                if (foundUser) {
+                    // User ditemukan, simpan data tersebut ke matchingUser
+                    matchingUser.value = foundUser;
+                    console.log("User ditemukan:", matchingUser.value);
+                    fetchData();
+                } else {
+                    // User tidak ditemukan, lakukan sesuatu yang lain
+                    console.log("User tidak ditemukan");
+                }
+            } catch (error) {
+                console.error("Error fetching data:", error);
+            }
+        };
+
         const fetchData = async () => {
             try {
                 const response = await fetch("/api/maps");
-                const data = await response.json();
+                let data = await response.json();
+
+                // Filter data berdasarkan name_company yang sama dengan name_company dari matchingUser
+                // data = data.filter((map) =>
+                //     matchingUser.value.company.includes(map.name_company)
+                // );
+
+                data = data.filter((map) =>
+                    matchingUser.value.view_company.includes(map.name_company)
+                );
 
                 markers.value = data.map((map) => ({
                     position: {
@@ -225,40 +270,6 @@ export default defineComponent({
                     })),
                 }));
                 // console.log(markers.value);
-            } catch (error) {
-                console.error("Error fetching data:", error);
-            }
-        };
-
-        const fetchUser = async () => {
-            try {
-                const response = await axios.get("/api/role");
-                const data = response.data;
-                user.value = data.map((user) => ({
-                    id: user.id,
-                    name: user.name,
-                    email: user.email,
-                    email_verified_at: user.email_verified_at,
-                    created_at: user.created_at,
-                    updated_at: user.updated_at,
-                    deleted_at: user.deleted_at,
-                    roles: user.role,
-                    company: user.company,
-                }));
-
-                // Mencari user yang cocok
-                const foundUser = user.value.find(
-                    (u) => u.id === props.auth.user.id
-                );
-
-                if (foundUser) {
-                    // User ditemukan, simpan data tersebut ke matchingUser
-                    matchingUser.value = foundUser;
-                    console.log("User ditemukan:", matchingUser.value);
-                } else {
-                    // User tidak ditemukan, lakukan sesuatu yang lain
-                    console.log("User tidak ditemukan");
-                }
             } catch (error) {
                 console.error("Error fetching data:", error);
             }
@@ -534,7 +545,7 @@ export default defineComponent({
         };
 
         onMounted(async () => {
-            fetchData();
+            // fetchData();
             fetchAgent();
             fetchUser();
             fetchUnit();
@@ -1055,6 +1066,12 @@ export default defineComponent({
                                         </div>
                                         <div class="flex pt-2 gap-2 pr-2">
                                             <button
+                                                v-if="
+                                                    matchingUser &&
+                                                    matchingUser.company.includes(
+                                                        selectedMarker.name_company
+                                                    )
+                                                "
                                                 type="button"
                                                 class="btn bg-green-500 text-white hover:bg-green-700"
                                                 @click="tambahItemBiaya"
@@ -1062,6 +1079,12 @@ export default defineComponent({
                                                 +
                                             </button>
                                             <button
+                                                v-if="
+                                                    matchingUser &&
+                                                    matchingUser.company.includes(
+                                                        selectedMarker.name_company
+                                                    )
+                                                "
                                                 type="button"
                                                 class="btn bg-red-500 text-white hover:bg-red-700"
                                                 @click="kurangiItemBiaya"
@@ -1094,19 +1117,6 @@ export default defineComponent({
                                                             biayaIndex + 1
                                                         }}:</label
                                                     >
-                                                    <!-- <input
-                                                        :id="
-                                                            'biaya' +
-                                                            index +
-                                                            '-' +
-                                                            biayaIndex
-                                                        "
-                                                        v-model="
-                                                            biayaItem.name_biaya
-                                                        "
-                                                        class="w-full rounded-lg text-xs"
-                                                        placeholder="isi Nama Biaya"
-                                                    /> -->
                                                     <v-select
                                                         :id="
                                                             'biaya' +
@@ -1169,6 +1179,12 @@ export default defineComponent({
                                         </div>
                                         <div class="flex gap-2 pt-2 pr-2">
                                             <button
+                                                v-if="
+                                                    matchingUser &&
+                                                    matchingUser.company.includes(
+                                                        selectedMarker.name_company
+                                                    )
+                                                "
                                                 type="button"
                                                 class="btn bg-green-500 text-white hover:bg-green-700"
                                                 @click="tambahBiayaBiaya(index)"
@@ -1176,6 +1192,12 @@ export default defineComponent({
                                                 +
                                             </button>
                                             <button
+                                                v-if="
+                                                    matchingUser &&
+                                                    matchingUser.company.includes(
+                                                        selectedMarker.name_company
+                                                    )
+                                                "
                                                 type="button"
                                                 class="btn bg-red-500 text-white hover:bg-red-700"
                                                 @click="
@@ -1203,12 +1225,24 @@ export default defineComponent({
                             class="flex flex-col lg:flex-row gap-2 justify-center"
                         >
                             <button
+                                v-if="
+                                    matchingUser &&
+                                    matchingUser.company.includes(
+                                        selectedMarker.name_company
+                                    )
+                                "
                                 type="submit"
                                 class="bg-blue-500 text-white py-3 px-4 rounded-md w-full"
                             >
                                 Save
                             </button>
                             <button
+                                v-if="
+                                    matchingUser &&
+                                    matchingUser.company.includes(
+                                        selectedMarker.name_company
+                                    )
+                                "
                                 @click="deleteSaveFormData"
                                 type="button"
                                 class="bg-red-500 text-white py-3 px-4 rounded-md w-full"

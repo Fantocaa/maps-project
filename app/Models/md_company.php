@@ -15,4 +15,9 @@ class md_company extends Model
     {
         return $this->belongsToMany(user_company::class, 'user_companies');
     }
+
+    public function viewCompanies()
+    {
+        return $this->belongsToMany(view_company::class, 'view_companies');
+    }
 }

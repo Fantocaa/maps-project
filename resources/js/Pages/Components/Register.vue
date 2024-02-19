@@ -37,6 +37,7 @@ const columns = [
     // { data: "password", title: "Password" },
     { data: "role", title: "Role" },
     { data: "company", title: "Company" },
+    { data: "view_company", title: "View Company" },
     {
         data: null,
         title: "Actions",

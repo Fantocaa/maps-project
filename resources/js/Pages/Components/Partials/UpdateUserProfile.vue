@@ -14,31 +14,28 @@ import "vue-select/dist/vue-select.css";
 const { props } = usePage();
 let companies = ref([]); // Add this line
 
-let form = useForm({
-    id: ref(props.user.id),
-    name: ref(props.user.name),
-    email: ref(props.user.email),
-    role: ref(props.user.roles[0].name),
-    // company_id: ref([]),
-    company_id: ref(props.user.companies),
-    // company_id: ref(props.user.companies.map((company) => company.id)),
-});
-
-let company_ids = ref(props.user.companies.map((company) => company.id));
-
-console.log(props.user.companies);
-
 const fetchDataCompany = async () => {
     const response = await axios.get("/api/company");
     companies.value = response.data;
 };
 
-onMounted(() => {
-    fetchDataCompany();
+let form = useForm({
+    id: ref(props.user.id),
+    name: ref(props.user.name),
+    email: ref(props.user.email),
+    role: ref(props.user.roles[0].name),
+    company_id: ref(props.user.companies),
+    // id_view_company: ref(props.user.companies[0].pivot.id_view_name_company),
+    // view_company_name: ref(companies ? companies.name_company : null), // Jika perusahaan ditemukan, gunakan name_company. Jika tidak, gunakan null.
+    id_view_name_company: ref(
+        props.user.view_companies.map((vc) => vc.company.name_company)
+    ),
 });
 
-watch(form.company_id, (newVal) => {
-    company_ids.value = newVal.map((company) => company.id);
+console.log(props.user);
+
+onMounted(() => {
+    fetchDataCompany();
 });
 </script>
 
@@ -156,6 +153,26 @@ watch(form.company_id, (newVal) => {
                     class="border-gray-400 rounded-md focus:border-gray-400 focus:ring focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-white dark:border-gray-600 dark:bg-dark-eval-1 dark:text-gray-300 dark:focus:ring-offset-dark-eval-1 w-full bg-dark-eval-0"
                 />
                 <InputError class="mt-2" :message="form.errors.company_id" />
+            </div>
+
+            <div>
+                <Label for="view_company" value="View Company" />
+                <vSelect
+                    id="view_company"
+                    v-model="form.id_view_name_company"
+                    :options="companies"
+                    label="name_company"
+                    searchable="true"
+                    track-by="id"
+                    multiple
+                    requred
+                    placeholder="Select a company"
+                    class="border-gray-400 rounded-md focus:border-gray-400 focus:ring focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-white dark:border-gray-600 dark:bg-dark-eval-1 dark:text-gray-300 dark:focus:ring-offset-dark-eval-1 w-full bg-dark-eval-0"
+                />
+                <InputError
+                    class="mt-2"
+                    :message="form.errors.id_view_name_company"
+                />
             </div>
 
             <div class="flex items-center gap-4">

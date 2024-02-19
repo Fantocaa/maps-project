@@ -81,12 +81,18 @@ class MdMapsController extends Controller
 
     public function has_role()
     {
+        // dd(Auth::user());
         $users = User::all();
 
         $users = $users->map(function ($user) {
+
             return array_merge($user->toArray(), [
                 'role' => $user->role_names,
                 'company' => $user->companies->pluck('name_company'),
+                // 'view_company' => $user->viewCompanies->pluck('name_company'),
+                'view_company' => $user->viewCompanies->map(function ($viewCompany) {
+                    return $viewCompany->company ? $viewCompany->company->name_company : null;
+                }),
             ]);
         });
 

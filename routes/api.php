@@ -6,6 +6,8 @@ use App\Http\Controllers\MdBiayaNameController;
 use App\Http\Controllers\MdCompanyController;
 use App\Http\Controllers\MdMapsController;
 use App\Http\Controllers\MdSatuanController;
+use App\Http\Controllers\UserCompanyController;
+use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -33,6 +35,8 @@ Route::middleware([])->group(function () {
 
     Route::get('/role', [MdMapsController::class, 'has_role'])->name('has_role');
     Route::get('/biaya', [MdBiayaController::class, 'index'])->name('index.biaya');
+
+    Route::get('/user_companies', [UserCompanyController::class, 'index'])->name('index.user_companies');
 
     Route::get('/company', [MdCompanyController::class, 'index'])->name('index.company');
     Route::get('/agent', [MdAgentController::class, 'index'])->name('index.agent');

@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\UpdateUserRequest;
+use App\Models\Company;
 use App\Models\User;
+use App\Models\view_company;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -32,11 +34,16 @@ class UserController extends Controller
         // Get the user's roles
         $roles = $user->roles->pluck('name');
         $company = $user->companies->pluck('name_company');
+        // $view_company = $user->viewCompanies->pluck('name_company');
+        $view_company = $user->viewCompanies->map(function ($viewCompany) {
+            return $viewCompany->company ? $viewCompany->company->name_company : null;
+        })->filter();
 
         return Inertia::render('Components/Edit', [
             'user' => $user,
             'roles' => $roles, // Add this line
             'company_id' => $company, // Add this line
+            'id_view_name_company' => $view_company, // Add this line
             'mustVerifyEmail' => $request->user() instanceof MustVerifyEmail,
             'status' => session('status'),
         ]);
@@ -44,9 +51,7 @@ class UserController extends Controller
 
     public function update_user(UpdateUserRequest $request): RedirectResponse
     {
-
         // dd($request);
-        // dd($request->company_id);
         $userId = $request->id; // get the user id from the request
 
         $request->validate([
@@ -55,6 +60,8 @@ class UserController extends Controller
             'role' => ['required', Rule::in(['user', 'superuser', 'admin', 'superadmin'])],
             'company_id' => ['required', 'array'],
             'company_id.id' => ['exists:md_companies,id'],
+            'id_view_name_company' => ['required', 'array'],
+            'id_view_name_company.id' => ['exists:md_companies,id'],
         ]);
 
         $user = User::find($userId);
@@ -66,14 +73,43 @@ class UserController extends Controller
         $user->roles()->detach();
         $user->assignRole($request->role);
 
-        // detach any existing companies and attach the new ones
-        // $user->companies()->sync($request->company_id);
 
         $companyIds = array_map(function ($company) {
             return $company['id'];
         }, $request->company_id);
-
+        
         $user->companies()->sync($companyIds);
+
+        $viewCompanyIds = array_map(function ($view_company) {
+            // Jika $view_company adalah array, kembalikan 'id'
+            if (is_array($view_company) && isset($view_company['id'])) {
+                return $view_company['id'];
+            }
+        
+            // Jika $view_company adalah string, cari perusahaan berdasarkan nama
+            if (is_string($view_company)) {
+                $company = Company::where('name_company', $view_company)->first();
+        
+                // Jika perusahaan ditemukan, kembalikan ID-nya
+                if ($company) {
+                    return $company->id;
+                }
+            }
+        
+            // Jika $view_company bukan array atau string, atau perusahaan tidak ditemukan, kembalikan null
+            return null;
+        }, $request->id_view_name_company);
+
+        // Hapus null dari $viewCompanyIds
+        $viewCompanyIds = array_filter($viewCompanyIds);
+
+        // Hapus semua ViewCompany yang terkait dengan pengguna
+        $user->viewCompanies()->delete();
+
+        // Buat ViewCompany baru untuk setiap ID perusahaan dalam $viewCompanyIds
+        foreach ($viewCompanyIds as $viewCompanyId) {
+            $user->viewCompanies()->create(['company_id' => $viewCompanyId]);
+        }
 
         return Redirect::route('manage.user');
     }
