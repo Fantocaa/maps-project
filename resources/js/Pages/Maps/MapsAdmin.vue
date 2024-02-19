@@ -621,7 +621,7 @@ export default defineComponent({
         <GMapMap
             api-key="AIzaSyD2dASx5Zo68GSyZuPjUs-4SBLYGsn4OPQ"
             id="google-map"
-            class="w-full h-[70vh] md:h-[75vh] lg:h-screen"
+            class="w-full h-[75vh] lg:h-screen"
             :center="center"
             :zoom="zoom"
             :options="{ disableDefaultUI: true }"
@@ -755,229 +755,244 @@ export default defineComponent({
                 >
                     <form @submit.prevent="saveFormData">
                         <h1 class="pb-4 w-[90%]">Alamat : {{ address }}</h1>
-                        <div class="pb-2">
-                            <label for="name_penerima" class="pb-2"
-                                >Nama Penerima:</label
-                            >
-                            <input
-                                v-model="formInput.name_penerima"
-                                id="name_penerima"
-                                class="w-full mb-2 p-2 border focus:outline-none focus:ring focus:border-blue-300 rounded-lg text-xs"
-                                placeholder="isi nama penerima"
-                            />
-                            <p
-                                v-if="!formInput.name_penerima"
-                                class="text-red-500"
-                            >
-                                Nama Penerima tidak boleh kosong
-                            </p>
-                        </div>
-                        <div class="w-full pb-2">
-                            <label for="name_agent" class="pb-2"
-                                >Nama Agent:</label
-                            >
-                            <v-select
-                                id="name_agent"
-                                :options="agent"
-                                v-model="formInput.name_agent"
-                                class="w-full"
-                            />
-                            <p
-                                v-if="!formInput.name_agent"
-                                class="text-red-500"
-                            >
-                                Agent tidak boleh kosong
-                            </p>
-                        </div>
-                        <div class="max-h-28 md:max-h-80 overflow-y-auto">
-                            <div
-                                class="pb-2"
-                                v-for="(item, index) in formInput"
-                                :key="index"
-                            >
-                                <div>
-                                    <div class="flex gap-2 md:gap-4 pb-2">
-                                        <div class="w-full">
-                                            <label
-                                                :for="'name_satuan' + index"
-                                                class="pb-2"
-                                                >Satuan:</label
-                                            >
-                                            <v-select
-                                                :id="'name_satuan' + index"
-                                                :options="satuan"
-                                                v-model="item.name_satuan"
-                                                class="w-full"
-                                            />
-                                            <p
-                                                v-if="!item.name_satuan"
-                                                class="text-red-500"
-                                            >
-                                                Satuan tidak boleh kosong
-                                            </p>
-                                        </div>
-                                        <div class="flex pt-2 gap-2 pr-2">
-                                            <button
-                                                type="button"
-                                                class="btn bg-green-500 text-white hover:bg-green-700"
-                                                @click="tambahItem"
-                                            >
-                                                +
-                                            </button>
-                                            <button
-                                                type="button"
-                                                class="btn bg-red-500 text-white hover:bg-red-700"
-                                                @click="kurangiItem"
-                                            >
-                                                -
-                                            </button>
-                                        </div>
-                                    </div>
-
-                                    <div class="flex gap-4">
-                                        <div class="flex flex-col w-full">
-                                            <div
-                                                v-for="(
-                                                    biaya, biayaIndex
-                                                ) in formInput[index].biaya"
-                                                :key="biayaIndex"
-                                                class="w-full flex gap-2"
-                                            >
-                                                <div
-                                                    class="lg:grid grid-cols-2 gap-4"
+                        <div class="overflow-y-scroll max-h-[448px]">
+                            <div class="pb-2">
+                                <label for="name_penerima" class="pb-2"
+                                    >Nama Penerima:</label
+                                >
+                                <input
+                                    v-model="formInput.name_penerima"
+                                    id="name_penerima"
+                                    class="w-full mb-2 p-2 border focus:outline-none focus:ring focus:border-blue-300 rounded-lg text-xs"
+                                    placeholder="isi nama penerima"
+                                />
+                                <p
+                                    v-if="!formInput.name_penerima"
+                                    class="text-red-500"
+                                >
+                                    Nama Penerima tidak boleh kosong
+                                </p>
+                            </div>
+                            <div class="w-full pb-2">
+                                <label for="name_agent" class="pb-2"
+                                    >Nama Agent:</label
+                                >
+                                <v-select
+                                    id="name_agent"
+                                    :options="agent"
+                                    v-model="formInput.name_agent"
+                                    class="w-full"
+                                />
+                                <p
+                                    v-if="!formInput.name_agent"
+                                    class="text-red-500"
+                                >
+                                    Agent tidak boleh kosong
+                                </p>
+                            </div>
+                            <div class="">
+                                <div
+                                    class="pb-2"
+                                    v-for="(item, index) in formInput"
+                                    :key="index"
+                                >
+                                    <div>
+                                        <div class="flex gap-2 md:gap-4 pb-2">
+                                            <div class="w-full">
+                                                <label
+                                                    :for="'name_satuan' + index"
+                                                    class="pb-2"
+                                                    >Satuan:</label
                                                 >
-                                                    <div class="pb-2">
-                                                        <label
-                                                            :for="
-                                                                'biaya' +
-                                                                index +
-                                                                '-' +
-                                                                biayaIndex
-                                                            "
-                                                            class=""
-                                                            >Nama Biaya
-                                                            {{
-                                                                biayaIndex + 1
-                                                            }}:</label
-                                                        >
-                                                        <v-select
-                                                            :id="
-                                                                'biaya' +
-                                                                index +
-                                                                '-' +
-                                                                biayaIndex
-                                                            "
-                                                            v-model="biaya.nama"
-                                                            :options="
-                                                                apiData.biaya
-                                                            "
-                                                            class="w-full rounded-lg text-xs"
-                                                        />
-                                                        <p
-                                                            v-if="!biaya.nama"
-                                                            class="text-red-500"
-                                                        >
-                                                            Nama Biaya tidak
-                                                            boleh kosong
-                                                        </p>
-                                                    </div>
-                                                    <div class="pb-2">
-                                                        <label
-                                                            :for="
-                                                                'biaya' +
-                                                                index +
-                                                                '-' +
-                                                                biayaIndex
-                                                            "
-                                                            class=""
-                                                            >Harga Biaya
-                                                            {{
-                                                                biayaIndex + 1
-                                                            }}:</label
-                                                        >
-                                                        <input
-                                                            :id="
-                                                                'biaya' +
-                                                                index +
-                                                                '-' +
-                                                                biayaIndex
-                                                            "
-                                                            v-model="
-                                                                biaya.harga
-                                                            "
-                                                            class="w-full rounded-lg text-xs"
-                                                            placeholder="isi Nama Harga"
-                                                        />
-                                                        <p
-                                                            v-if="!biaya.harga"
-                                                            class="text-red-500"
-                                                        >
-                                                            Harga Biaya tidak
-                                                            boleh kosong
-                                                        </p>
-                                                    </div>
-                                                </div>
-                                                <div
-                                                    class="flex gap-2 pt-2 pr-2 lg:hidden"
+                                                <v-select
+                                                    :id="'name_satuan' + index"
+                                                    :options="satuan"
+                                                    v-model="item.name_satuan"
+                                                    class="w-full"
+                                                />
+                                                <p
+                                                    v-if="!item.name_satuan"
+                                                    class="text-red-500"
                                                 >
-                                                    <button
-                                                        type="button"
-                                                        class="btn bg-green-500 text-white hover:bg-green-700"
-                                                        @click="
-                                                            tambahBiaya(index)
-                                                        "
-                                                    >
-                                                        +
-                                                    </button>
-                                                    <button
-                                                        type="button"
-                                                        class="btn bg-red-500 text-white hover:bg-red-700"
-                                                        @click="
-                                                            kurangiBiaya(index)
-                                                        "
-                                                    >
-                                                        -
-                                                    </button>
-                                                </div>
+                                                    Satuan tidak boleh kosong
+                                                </p>
+                                            </div>
+                                            <div class="flex pt-2 gap-2 pr-2">
+                                                <button
+                                                    type="button"
+                                                    class="btn bg-green-500 text-white hover:bg-green-700"
+                                                    @click="tambahItem"
+                                                >
+                                                    +
+                                                </button>
+                                                <button
+                                                    type="button"
+                                                    class="btn bg-red-500 text-white hover:bg-red-700"
+                                                    @click="kurangiItem"
+                                                >
+                                                    -
+                                                </button>
                                             </div>
                                         </div>
-                                        <div
-                                            class="gap-2 pt-2 pr-2 hidden lg:flex"
-                                        >
-                                            <button
-                                                type="button"
-                                                class="btn bg-green-500 text-white hover:bg-green-700"
-                                                @click="tambahBiaya(index)"
+
+                                        <div class="flex gap-4">
+                                            <div class="flex flex-col w-full">
+                                                <div
+                                                    v-for="(
+                                                        biaya, biayaIndex
+                                                    ) in formInput[index].biaya"
+                                                    :key="biayaIndex"
+                                                    class="w-full flex gap-2"
+                                                >
+                                                    <div
+                                                        class="lg:grid grid-cols-2 gap-4"
+                                                    >
+                                                        <div class="pb-2">
+                                                            <label
+                                                                :for="
+                                                                    'biaya' +
+                                                                    index +
+                                                                    '-' +
+                                                                    biayaIndex
+                                                                "
+                                                                class=""
+                                                                >Nama Biaya
+                                                                {{
+                                                                    biayaIndex +
+                                                                    1
+                                                                }}:</label
+                                                            >
+                                                            <v-select
+                                                                :id="
+                                                                    'biaya' +
+                                                                    index +
+                                                                    '-' +
+                                                                    biayaIndex
+                                                                "
+                                                                v-model="
+                                                                    biaya.nama
+                                                                "
+                                                                :options="
+                                                                    apiData.biaya
+                                                                "
+                                                                class="w-full rounded-lg text-xs"
+                                                            />
+                                                            <p
+                                                                v-if="
+                                                                    !biaya.nama
+                                                                "
+                                                                class="text-red-500"
+                                                            >
+                                                                Nama Biaya tidak
+                                                                boleh kosong
+                                                            </p>
+                                                        </div>
+                                                        <div class="pb-2">
+                                                            <label
+                                                                :for="
+                                                                    'biaya' +
+                                                                    index +
+                                                                    '-' +
+                                                                    biayaIndex
+                                                                "
+                                                                class=""
+                                                                >Harga Biaya
+                                                                {{
+                                                                    biayaIndex +
+                                                                    1
+                                                                }}:</label
+                                                            >
+                                                            <input
+                                                                :id="
+                                                                    'biaya' +
+                                                                    index +
+                                                                    '-' +
+                                                                    biayaIndex
+                                                                "
+                                                                v-model="
+                                                                    biaya.harga
+                                                                "
+                                                                class="w-full rounded-lg text-xs"
+                                                                placeholder="isi Nama Harga"
+                                                            />
+                                                            <p
+                                                                v-if="
+                                                                    !biaya.harga
+                                                                "
+                                                                class="text-red-500"
+                                                            >
+                                                                Harga Biaya
+                                                                tidak boleh
+                                                                kosong
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                    <div
+                                                        class="flex gap-2 pt-2 pr-2 lg:hidden"
+                                                    >
+                                                        <button
+                                                            type="button"
+                                                            class="btn bg-green-500 text-white hover:bg-green-700"
+                                                            @click="
+                                                                tambahBiaya(
+                                                                    index
+                                                                )
+                                                            "
+                                                        >
+                                                            +
+                                                        </button>
+                                                        <button
+                                                            type="button"
+                                                            class="btn bg-red-500 text-white hover:bg-red-700"
+                                                            @click="
+                                                                kurangiBiaya(
+                                                                    index
+                                                                )
+                                                            "
+                                                        >
+                                                            -
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div
+                                                class="gap-2 pt-2 pr-2 hidden lg:flex"
                                             >
-                                                +
-                                            </button>
-                                            <button
-                                                type="button"
-                                                class="btn bg-red-500 text-white hover:bg-red-700"
-                                                @click="kurangiBiaya(index)"
-                                            >
-                                                -
-                                            </button>
+                                                <button
+                                                    type="button"
+                                                    class="btn bg-green-500 text-white hover:bg-green-700"
+                                                    @click="tambahBiaya(index)"
+                                                >
+                                                    +
+                                                </button>
+                                                <button
+                                                    type="button"
+                                                    class="btn bg-red-500 text-white hover:bg-red-700"
+                                                    @click="kurangiBiaya(index)"
+                                                >
+                                                    -
+                                                </button>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-
-                        <div class="pt-2">
-                            <label for="notes" class="pb-2">Catatan:</label>
-                            <textarea
-                                v-model="formInput.notes"
-                                id="notes"
-                                class="w-full mb-2 p-2 border focus:outline-none focus:ring focus:border-blue-300 h-16 md:h-16 rounded-lg text-sm"
-                            />
-                            <!-- <p
+                            <div class="pt-2">
+                                <label for="notes" class="pb-2">Catatan:</label>
+                                <textarea
+                                    v-model="formInput.notes"
+                                    id="notes"
+                                    class="w-full mb-2 p-2 border focus:outline-none focus:ring focus:border-blue-300 h-16 md:h-16 rounded-lg text-sm"
+                                />
+                                <!-- <p
                                 v-if="!formInput.notes"
                                 class="text-red-500 mb-4"
                             >
                                 Catatan tidak boleh kosong
                             </p> -->
+                            </div>
                         </div>
+
                         <div class="flex gap-4 justify-center">
                             <button
                                 type="submit"
@@ -1010,6 +1025,7 @@ export default defineComponent({
                     </div>
                 </div>
             </div>
+
             <!-- Show Marker -->
             <div
                 v-show="selectedMarker"
@@ -1019,243 +1035,315 @@ export default defineComponent({
                         ? selectedMarker.value.satuan
                         : ''
                 "
-                class="absolute z-10 inset-0 flex items-center justify-center 2xl:pl-[40%] text-xs pt-64 md:pt-40 lg:pt-0"
+                class="absolute z-10 inset-0 flex items-center justify-center 2xl:pl-[40%] text-xs pt-[86px] md:pt-24 lg:pt-0"
                 style="display: none"
             >
                 <div
-                    class="bg-white w-full lg:w-[512px] h-auto rounded-xl p-8 relative shadow-xl mx-4"
+                    class="bg-white w-full lg:w-[512px] max-h-[1024px] rounded-xl p-8 relative shadow-xl mx-4"
                 >
                     <form @submit.prevent="editSaveFormData">
+                        <!-- <div class="overflow-y-scroll max-h-[448px]"> -->
                         <h1 class="pb-4 w-[90%]">
                             Alamat : {{ selectedMarker.lokasi }}
                         </h1>
-                        <h1 class="pb-4 w-[90%]">
-                            Nama Penerima : {{ selectedMarker.name_penerima }}
-                        </h1>
-                        <h1 class="pb-4 w-[90%]">
-                            Nama Agent : {{ selectedMarker.name_agent }}
-                        </h1>
-                        <div class="max-h-80 overflow-y-auto">
-                            <div
-                                class="pb-2"
-                                v-for="(
-                                    satuanItem, index
-                                ) in selectedMarker.satuan"
-                                :key="index"
-                            >
-                                <div>
-                                    <div class="flex gap-2 md:gap-4 pb-2">
-                                        <div class="w-full">
-                                            <label
-                                                :for="'name_satuan' + index"
-                                                class="pb-2"
-                                                >Satuan:</label
-                                            >
-                                            <v-select
-                                                :id="'name_satuan' + index"
-                                                :options="satuan"
-                                                v-model="satuanItem.name_satuan"
-                                                class="w-full"
-                                            />
-                                            <p
-                                                v-if="!satuanItem.name_satuan"
-                                                class="text-red-500"
-                                            >
-                                                Satuan tidak boleh kosong
-                                            </p>
-                                        </div>
-                                        <div class="flex pt-2 gap-2 pr-2">
-                                            <button
-                                                v-if="
-                                                    matchingUser &&
-                                                    matchingUser.company.includes(
-                                                        selectedMarker.name_company
-                                                    )
-                                                "
-                                                type="button"
-                                                class="btn bg-green-500 text-white hover:bg-green-700"
-                                                @click="tambahItemBiaya"
-                                            >
-                                                +
-                                            </button>
-                                            <button
-                                                v-if="
-                                                    matchingUser &&
-                                                    matchingUser.company.includes(
-                                                        selectedMarker.name_company
-                                                    )
-                                                "
-                                                type="button"
-                                                class="btn bg-red-500 text-white hover:bg-red-700"
-                                                @click="kurangiItemBiaya"
-                                            >
-                                                -
-                                            </button>
-                                        </div>
-                                    </div>
-
-                                    <div class="flex gap-4">
-                                        <div class="flex flex-col w-full">
-                                            <div
-                                                v-for="(
-                                                    biayaItem, biayaIndex
-                                                ) in satuanItem.biaya"
-                                                :key="biayaIndex"
-                                                class="w-full grid grid-cols-2 gap-2"
-                                            >
-                                                <div class="pb-2">
-                                                    <label
-                                                        :for="
-                                                            'biaya' +
-                                                            index +
-                                                            '-' +
-                                                            biayaIndex
-                                                        "
-                                                        class=""
-                                                        >Nama Biaya
-                                                        {{
-                                                            biayaIndex + 1
-                                                        }}:</label
-                                                    >
-                                                    <v-select
-                                                        :id="
-                                                            'biaya' +
-                                                            index +
-                                                            '-' +
-                                                            biayaIndex
-                                                        "
-                                                        v-model="
-                                                            biayaItem.name_biaya
-                                                        "
-                                                        :options="apiData.biaya"
-                                                        class="w-full rounded-lg text-xs"
-                                                    />
-                                                    <p
-                                                        v-if="
-                                                            !biayaItem.name_biaya
-                                                        "
-                                                        class="text-red-500"
-                                                    >
-                                                        Nama Biaya tidak boleh
-                                                        kosong
-                                                    </p>
-                                                </div>
-                                                <div class="pb-2">
-                                                    <label
-                                                        :for="
-                                                            'biaya' +
-                                                            index +
-                                                            '-' +
-                                                            biayaIndex
-                                                        "
-                                                        class=""
-                                                        >Harga Biaya
-                                                        {{
-                                                            biayaIndex + 1
-                                                        }}:</label
-                                                    >
-                                                    <input
-                                                        :id="
-                                                            'biaya' +
-                                                            index +
-                                                            '-' +
-                                                            biayaIndex
-                                                        "
-                                                        v-model="
-                                                            biayaItem.harga
-                                                        "
-                                                        class="w-full rounded-lg text-xs"
-                                                        placeholder="isi Nama Harga"
-                                                    />
-                                                    <p
-                                                        v-if="!biayaItem.harga"
-                                                        class="text-red-500"
-                                                    >
-                                                        Harga Biaya tidak boleh
-                                                        kosong
-                                                    </p>
-                                                </div>
+                        <div class="max-h-[448px] overflow-auto">
+                            <h1 class="pb-4 w-[90%]">
+                                Nama Penerima :
+                                {{ selectedMarker.name_penerima }}
+                            </h1>
+                            <h1 class="pb-4 w-[90%]">
+                                Nama Agent : {{ selectedMarker.name_agent }}
+                            </h1>
+                            <div class="">
+                                <div
+                                    class="pb-2"
+                                    v-for="(
+                                        satuanItem, index
+                                    ) in selectedMarker.satuan"
+                                    :key="index"
+                                >
+                                    <div>
+                                        <div class="flex gap-2 md:gap-4 pb-2">
+                                            <div class="w-full">
+                                                <label
+                                                    :for="'name_satuan' + index"
+                                                    class="pb-2"
+                                                    >Satuan:</label
+                                                >
+                                                <v-select
+                                                    :disabled="
+                                                        !(
+                                                            matchingUser &&
+                                                            matchingUser.company.includes(
+                                                                selectedMarker.name_company
+                                                            )
+                                                        )
+                                                    "
+                                                    :id="'name_satuan' + index"
+                                                    :options="satuan"
+                                                    v-model="
+                                                        satuanItem.name_satuan
+                                                    "
+                                                    class="w-full"
+                                                />
+                                                <p
+                                                    v-if="
+                                                        !satuanItem.name_satuan
+                                                    "
+                                                    class="text-red-500"
+                                                >
+                                                    Satuan tidak boleh kosong
+                                                </p>
+                                            </div>
+                                            <div class="flex pt-2 gap-2 pr-2">
+                                                <button
+                                                    v-if="
+                                                        matchingUser &&
+                                                        matchingUser.company.includes(
+                                                            selectedMarker.name_company
+                                                        )
+                                                    "
+                                                    type="button"
+                                                    class="btn bg-green-500 text-white hover:bg-green-700"
+                                                    @click="tambahItemBiaya"
+                                                >
+                                                    +
+                                                </button>
+                                                <button
+                                                    v-if="
+                                                        matchingUser &&
+                                                        matchingUser.company.includes(
+                                                            selectedMarker.name_company
+                                                        )
+                                                    "
+                                                    type="button"
+                                                    class="btn bg-red-500 text-white hover:bg-red-700"
+                                                    @click="kurangiItemBiaya"
+                                                >
+                                                    -
+                                                </button>
                                             </div>
                                         </div>
-                                        <div class="flex gap-2 pt-2 pr-2">
-                                            <button
-                                                v-if="
-                                                    matchingUser &&
-                                                    matchingUser.company.includes(
-                                                        selectedMarker.name_company
-                                                    )
-                                                "
-                                                type="button"
-                                                class="btn bg-green-500 text-white hover:bg-green-700"
-                                                @click="tambahBiayaBiaya(index)"
-                                            >
-                                                +
-                                            </button>
-                                            <button
-                                                v-if="
-                                                    matchingUser &&
-                                                    matchingUser.company.includes(
-                                                        selectedMarker.name_company
-                                                    )
-                                                "
-                                                type="button"
-                                                class="btn bg-red-500 text-white hover:bg-red-700"
-                                                @click="
-                                                    kurangiBiayaBiaya(index)
-                                                "
-                                            >
-                                                -
-                                            </button>
+
+                                        <div class="flex gap-4">
+                                            <div class="flex flex-col w-full">
+                                                <div
+                                                    v-for="(
+                                                        biayaItem, biayaIndex
+                                                    ) in satuanItem.biaya"
+                                                    :key="biayaIndex"
+                                                    class="w-full flex gap-2"
+                                                >
+                                                    <div
+                                                        class="lg:grid grid-cols-2 gap-4"
+                                                    >
+                                                        <div class="pb-2">
+                                                            <label
+                                                                :for="
+                                                                    'biaya' +
+                                                                    index +
+                                                                    '-' +
+                                                                    biayaIndex
+                                                                "
+                                                                class=""
+                                                                >Nama Biaya
+                                                                {{
+                                                                    biayaIndex +
+                                                                    1
+                                                                }}:</label
+                                                            >
+                                                            <v-select
+                                                                :id="
+                                                                    'biaya' +
+                                                                    index +
+                                                                    '-' +
+                                                                    biayaIndex
+                                                                "
+                                                                v-model="
+                                                                    biayaItem.name_biaya
+                                                                "
+                                                                :options="
+                                                                    apiData.biaya
+                                                                "
+                                                                class="w-full rounded-lg text-xs"
+                                                            />
+                                                            <p
+                                                                v-if="
+                                                                    !biayaItem.name_biaya
+                                                                "
+                                                                class="text-red-500"
+                                                            >
+                                                                Nama Biaya tidak
+                                                                boleh kosong
+                                                            </p>
+                                                        </div>
+                                                        <div class="pb-2">
+                                                            <label
+                                                                :for="
+                                                                    'biaya' +
+                                                                    index +
+                                                                    '-' +
+                                                                    biayaIndex
+                                                                "
+                                                                class=""
+                                                                >Harga Biaya
+                                                                {{
+                                                                    biayaIndex +
+                                                                    1
+                                                                }}:</label
+                                                            >
+                                                            <input
+                                                                :id="
+                                                                    'biaya' +
+                                                                    index +
+                                                                    '-' +
+                                                                    biayaIndex
+                                                                "
+                                                                v-model="
+                                                                    biayaItem.harga
+                                                                "
+                                                                class="w-full rounded-lg text-xs"
+                                                                placeholder="isi Nama Harga"
+                                                            />
+                                                            <p
+                                                                v-if="
+                                                                    !biayaItem.harga
+                                                                "
+                                                                class="text-red-500"
+                                                            >
+                                                                Harga Biaya
+                                                                tidak boleh
+                                                                kosong
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                    <div
+                                                        class="flex gap-2 pt-2 pr-2 lg:hidden"
+                                                    >
+                                                        <button
+                                                            type="button"
+                                                            class="btn bg-green-500 text-white hover:bg-green-700"
+                                                            @click="
+                                                                tambahBiayaBiaya(
+                                                                    index
+                                                                )
+                                                            "
+                                                        >
+                                                            +
+                                                        </button>
+                                                        <button
+                                                            type="button"
+                                                            class="btn bg-red-500 text-white hover:bg-red-700"
+                                                            @click="
+                                                                kurangiBiayaBiaya(
+                                                                    index
+                                                                )
+                                                            "
+                                                        >
+                                                            -
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                                <div
+                                                    class="gap-2 pt-2 pr-2 hidden lg:flex"
+                                                >
+                                                    <button
+                                                        v-if="
+                                                            matchingUser &&
+                                                            matchingUser.company.includes(
+                                                                selectedMarker.name_company
+                                                            )
+                                                        "
+                                                        type="button"
+                                                        class="btn bg-green-500 text-white hover:bg-green-700"
+                                                        @click="
+                                                            tambahBiayaBiaya(
+                                                                index
+                                                            )
+                                                        "
+                                                    >
+                                                        +
+                                                    </button>
+                                                    <button
+                                                        v-if="
+                                                            matchingUser &&
+                                                            matchingUser.company.includes(
+                                                                selectedMarker.name_company
+                                                            )
+                                                        "
+                                                        type="button"
+                                                        class="btn bg-red-500 text-white hover:bg-red-700"
+                                                        @click="
+                                                            kurangiBiayaBiaya(
+                                                                index
+                                                            )
+                                                        "
+                                                    >
+                                                        -
+                                                    </button>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
 
-                        <label for="notes">Catatan:</label>
-                        <textarea
-                            id="notes"
-                            class="w-full mb-2 p-2 border h-32 md:h-16"
-                            >{{
-                                selectedMarker ? selectedMarker.notes : ""
-                            }}</textarea
-                        >
-
-                        <div
-                            class="flex flex-col lg:flex-row gap-2 justify-center"
-                        >
-                            <button
-                                v-if="
-                                    matchingUser &&
-                                    matchingUser.company.includes(
-                                        selectedMarker.name_company
+                            <label for="notes">Catatan:</label>
+                            <textarea
+                                id="notes"
+                                class="w-full mb-2 p-2 border h-32 md:h-16"
+                                :disabled="
+                                    !(
+                                        matchingUser &&
+                                        matchingUser.company.includes(
+                                            selectedMarker.name_company
+                                        )
                                     )
                                 "
-                                type="submit"
-                                class="bg-blue-500 text-white py-3 px-4 rounded-md w-full"
+                                >{{
+                                    selectedMarker ? selectedMarker.notes : ""
+                                }}</textarea
                             >
-                                Save
-                            </button>
-                            <button
-                                v-if="
-                                    matchingUser &&
-                                    matchingUser.company.includes(
-                                        selectedMarker.name_company
-                                    )
-                                "
-                                @click="deleteSaveFormData"
-                                type="button"
-                                class="bg-red-500 text-white py-3 px-4 rounded-md w-full"
-                            >
-                                Delete
-                            </button>
-                        </div>
-                        <div class="mt-8">
-                            <h1>Dibuat oleh : {{ selectedMarker.name }}</h1>
-                            <h1>
-                                Perusahaan : {{ selectedMarker.name_company }}
-                            </h1>
-                            <span>Dibuat pada : {{ selectedMarker.date }}</span>
+                            <!-- </div> -->
+
+                            <div class="flex lg:flex-row gap-2 justify-center">
+                                <button
+                                    v-if="
+                                        matchingUser &&
+                                        matchingUser.company.includes(
+                                            selectedMarker.name_company
+                                        )
+                                    "
+                                    type="submit"
+                                    class="bg-blue-500 text-white py-3 px-4 rounded-md w-full"
+                                >
+                                    Save
+                                </button>
+                                <button
+                                    v-if="
+                                        matchingUser &&
+                                        matchingUser.company.includes(
+                                            selectedMarker.name_company
+                                        )
+                                    "
+                                    @click="deleteSaveFormData"
+                                    type="button"
+                                    class="bg-red-500 text-white py-3 px-4 rounded-md w-full"
+                                >
+                                    Delete
+                                </button>
+                            </div>
+                            <div class="mt-8">
+                                <h1>Dibuat oleh : {{ selectedMarker.name }}</h1>
+                                <h1>
+                                    Perusahaan :
+                                    {{ selectedMarker.name_company }}
+                                </h1>
+                                <span
+                                    >Dibuat pada :
+                                    {{ selectedMarker.date }}</span
+                                >
+                            </div>
                         </div>
                     </form>
                     <div class="absolute top-0 right-1">
