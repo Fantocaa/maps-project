@@ -1153,6 +1153,14 @@ export default defineComponent({
                                                                 }}:</label
                                                             >
                                                             <v-select
+                                                                :disabled="
+                                                                    !(
+                                                                        matchingUser &&
+                                                                        matchingUser.company.includes(
+                                                                            selectedMarker.name_company
+                                                                        )
+                                                                    )
+                                                                "
                                                                 :id="
                                                                     'biaya' +
                                                                     index +
@@ -1193,6 +1201,14 @@ export default defineComponent({
                                                                 }}:</label
                                                             >
                                                             <input
+                                                                :disabled="
+                                                                    !(
+                                                                        matchingUser &&
+                                                                        matchingUser.company.includes(
+                                                                            selectedMarker.name_company
+                                                                        )
+                                                                    )
+                                                                "
                                                                 :id="
                                                                     'biaya' +
                                                                     index +

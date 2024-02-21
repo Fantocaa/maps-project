@@ -17,7 +17,7 @@ import { GithubIcon } from "@/Components/Icons/brands";
         <div
             class="p-6 overflow-hidden bg-white rounded-md shadow-md dark:bg-dark-eval-1 flex justify-between"
         >
-            <h1>User tidak memiliki Role yang tepat</h1>
+            <h1>Tidak menemukan Halaman yang kamu cari</h1>
 
             <Button
                 external

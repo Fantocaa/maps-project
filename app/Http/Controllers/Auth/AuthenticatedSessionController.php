@@ -39,9 +39,9 @@ class AuthenticatedSessionController extends Controller
         $user->load('companies');
 
         if (Auth::user()->hasRole('admin')) {
-            return redirect()->to('/maps/user');
+            return redirect()->to('/maps/admin');
         } else if (Auth::user()->hasRole('superuser')) {
-            return redirect()->to('/maps/user');
+            return redirect()->to('/maps/superuser');
         } else if (Auth::user()->hasRole('user')) {
             return redirect()->to('/maps/user');
         } else {
