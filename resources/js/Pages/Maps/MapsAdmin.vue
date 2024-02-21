@@ -1237,6 +1237,12 @@ export default defineComponent({
                                                         class="flex gap-2 pt-2 pr-2 lg:hidden"
                                                     >
                                                         <button
+                                                            v-if="
+                                                                matchingUser &&
+                                                                matchingUser.company.includes(
+                                                                    selectedMarker.name_company
+                                                                )
+                                                            "
                                                             type="button"
                                                             class="btn bg-green-500 text-white hover:bg-green-700"
                                                             @click="
@@ -1248,6 +1254,12 @@ export default defineComponent({
                                                             +
                                                         </button>
                                                         <button
+                                                            v-if="
+                                                                matchingUser &&
+                                                                matchingUser.company.includes(
+                                                                    selectedMarker.name_company
+                                                                )
+                                                            "
                                                             type="button"
                                                             class="btn bg-red-500 text-white hover:bg-red-700"
                                                             @click="
