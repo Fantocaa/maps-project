@@ -652,7 +652,7 @@ export default defineComponent({
                         <GMapAutocomplete
                             placeholder="Cari Lokasi"
                             @place_changed="setPlace"
-                            class="px-4 py-4 md:py-4 w-full md:w-[576px] xl:w-[800px] border rounded-full focus:outline-none focus:ring focus:border-blue-300 shadow-xl border-none pl-14 text-lg"
+                            class="px-4 py-4 md:py-2 2xl:py-4 w-full md:w-[576px] xl:w-[800px] border rounded-full focus:outline-none focus:ring focus:border-blue-300 shadow-xl border-none pl-14 text-lg"
                         >
                         </GMapAutocomplete>
                     </div>
@@ -742,16 +742,12 @@ export default defineComponent({
             </div>
 
             <!-- Add new Marker -->
-            <!-- <div
-                v-if="markers.length && markers[markers.length - 1].showForm"
-                class="absolute z-10 inset-0 flex items-center justify-center xl:inset-auto xl:transform xl:translate-x-8 xl:flex-initial xl:items-start xl:justify-start xl:bottom-[25%] xl:right-[8%] 2xl:right-[16%]"
-            > -->
             <div
                 v-show="markers.length && markers[markers.length - 1].showForm"
-                class="absolute z-10 inset-0 flex items-center justify-center 2xl:pl-[40%] text-xs pt-[86px] md:pt-24 lg:pt-0"
+                class="absolute z-10 inset-0 flex items-center justify-center 2xl:pl-[40%] text-xs pt-[86px] md:pt-24 lg:pt-8"
             >
                 <div
-                    class="bg-white w-96 lg:w-[512px] h-auto rounded-md p-8 relative shadow-xl mx-4"
+                    class="bg-white w-96 md:w-[1024px] lg:w-[512px] h-auto rounded-md p-8 relative shadow-xl mx-4 md:mx-24"
                 >
                     <form @submit.prevent="saveFormData">
                         <h1 class="pb-4 w-[90%]">Alamat : {{ address }}</h1>
@@ -1039,14 +1035,16 @@ export default defineComponent({
                 style="display: none"
             >
                 <div
-                    class="bg-white w-full lg:w-[512px] max-h-[1024px] rounded-xl p-8 relative shadow-xl mx-4"
+                    class="bg-white w-full lg:w-[512px] max-h-[1024px] rounded-xl p-8 relative shadow-xl mx-4 md:mx-24"
                 >
                     <form @submit.prevent="editSaveFormData">
                         <!-- <div class="overflow-y-scroll max-h-[448px]"> -->
                         <h1 class="pb-4 w-[90%]">
                             Alamat : {{ selectedMarker.lokasi }}
                         </h1>
-                        <div class="max-h-[448px] overflow-auto">
+                        <div
+                            class="max-h-[448px] xl:max-h-[384px] 2xl:max-h-[448px] overflow-auto"
+                        >
                             <h1 class="pb-4 w-[90%]">
                                 Nama Penerima :
                                 {{ selectedMarker.name_penerima }}
