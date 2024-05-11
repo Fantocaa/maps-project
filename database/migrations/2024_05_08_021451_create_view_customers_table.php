@@ -11,11 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('view_companies', function (Blueprint $table) {
+        Schema::create('view_customers', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
-            $table->foreignId('company_id')->constrained('md_companies')->onDelete('cascade');
-            $table->softDeletes();
+            $table->foreignId('customer_id')->constrained('md_companies')->onDelete('cascade');
             $table->timestamps();
         });
     }
@@ -25,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('view_companies');
+        Schema::dropIfExists('view_customers');
     }
 };

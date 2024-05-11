@@ -2,19 +2,18 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\md_maps;
 use App\Http\Requests\Storemd_mapsRequest;
 use App\Http\Requests\Updatemd_mapsRequest;
 use App\Models\md_agent;
 use App\Models\md_biaya;
 use App\Models\md_biaya_name;
 use App\Models\md_company;
+use App\Models\md_maps;
 use App\Models\md_satuan;
 use App\Models\User;
 use Carbon\Carbon;
-use Illuminate\Support\Facades\Auth;
-use Inertia\Inertia;
-
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Http;
 
 class MdMapsController extends Controller
 {
@@ -24,21 +23,28 @@ class MdMapsController extends Controller
     public function index()
     {
         $maps = md_maps::join('md_agents', 'md_maps.id_agent', '=', 'md_agents.id')
-                        ->join('md_companies', 'md_maps.id_perusahaan', '=', 'md_companies.id')
-                        ->select('md_maps.*', 'md_agents.name_agent as name_agent', 'md_companies.name_company as name_company')
-                        ->get();
+            ->join('md_companies', 'md_maps.id_perusahaan', '=', 'md_companies.id')
+            ->leftJoin('md_companies as customers', 'md_maps.id_customer', '=', 'customers.id')
+            ->select(
+                'md_maps.*',
+                'md_agents.name_agent as name_agent',
+                'md_companies.name_company as name_company',
+                'customers.name_company as name_customer'
+            )
+            ->get();
 
         foreach ($maps as $map) {
             $satuans = md_satuan::whereHas('biaya', function ($query) use ($map) {
                 $query->where('id_maps', $map->id);
             })->get();
-        
+
             $map->satuan = $satuans->map(function ($satuan) use ($map) {
                 $biayas = md_biaya::where('id_maps', $map->id)
-                                  ->where('id_satuan', $satuan->id)
-                                  ->join('md_biaya_names', 'md_biayas.name_biaya', '=', 'md_biaya_names.id')
-                                  ->select('md_biayas.*', 'md_biaya_names.biaya_name as biaya_name')
-                                  ->get();
+                    ->where('id_satuan', $satuan->id)
+                    ->join('md_biaya_names', 'md_biayas.name_biaya', '=', 'md_biaya_names.id')
+                    ->select('md_biayas.*', 'md_biaya_names.biaya_name as biaya_name')
+                    ->get();
+
                 return [
                     'name_satuan' => $satuan->name_satuan,
                     // 'biaya' => $biayas->map(function ($biaya) {
@@ -56,17 +62,18 @@ class MdMapsController extends Controller
                         //     $biaya_name_id = $biaya_name->id;
                         //     // ...
                         // } else {
-                           
+
                         // }
 
                         return [
                             'name_biaya' => $biaya->biaya_name,
-                            'harga' => $biaya->harga
+                            'harga' => $biaya->harga,
                         ];
-                    })
+                    }),
                 ];
             });
         }
+
         // $maps = md_maps::all();
         return response()->json($maps);
     }
@@ -81,22 +88,24 @@ class MdMapsController extends Controller
 
     public function has_role()
     {
-        // dd(Auth::user());
         $users = User::all();
 
         $users = $users->map(function ($user) {
+            // Sembunyikan relasi 'viewCustomers' sebelum mengubah user menjadi array
+            $user->makeHidden(['viewCustomers']);
+
+            $viewCustomers = $user->viewCustomers->map(function ($viewCustomer) {
+                return $viewCustomer->company ? $viewCustomer->company->name_company : 'No company';
+            });
 
             return array_merge($user->toArray(), [
                 'role' => $user->role_names,
                 'company' => $user->companies->pluck('name_company'),
-                // 'view_company' => $user->viewCompanies->pluck('name_company'),
-                'view_company' => $user->viewCompanies->map(function ($viewCompany) {
-                    return $viewCompany->company ? $viewCompany->company->name_company : null;
-                }),
+                'view_company' => $user->viewCompanies->pluck('company.name_company'),
+                'view_customer' => $viewCustomers,
             ]);
         });
 
-        // Mengembalikan data dalam format JSON
         return response()->json($users);
     }
 
@@ -108,13 +117,19 @@ class MdMapsController extends Controller
         // dd($request);
 
         $company = md_company::firstWhere('name_company', $request->name_company);
-        if (!$company) {
+        if (! $company) {
             // Handle the case where the agent is not found
             return;
         }
 
         $agent = md_agent::firstWhere('name_agent', $request->name_agent);
-        if (!$agent) {
+        if (! $agent) {
+            // Handle the case where the agent is not found
+            return;
+        }
+
+        $customer = md_company::firstWhere('name_company', $request->name_customer);
+        if (! $customer) {
             // Handle the case where the agent is not found
             return;
         }
@@ -126,8 +141,9 @@ class MdMapsController extends Controller
         $form->lokasi = $request->lokasi;
         $form->name = $request->name;
         $form->date = Carbon::now()->toDateString();
-        $form->id_agent = $agent->id; 
-        $form->id_perusahaan = $company->id; 
+        $form->id_perusahaan = $company->id;
+        $form->id_agent = $agent->id;
+        $form->id_customer = $customer->id;
         $form->name_penerima = $request->name_penerima;
         $form->save();
 
@@ -184,11 +200,11 @@ class MdMapsController extends Controller
         $form = md_maps::find($request->id);
 
         // Tambahkan pengecekan untuk memastikan objek ditemukan sebelum memanipulasinya
-        if (!$form) {
+        if (! $form) {
             return response()->json(['error' => 'Data not found'], 404);
         }
-        
-        if (!empty($request->satuan)) {
+
+        if (! empty($request->satuan)) {
             foreach ($request->satuan as $satuanData) {
                 if (isset($satuanData['name_satuan'])) {
                     $satuan = md_satuan::firstWhere('name_satuan', $satuanData['name_satuan']);
@@ -196,15 +212,15 @@ class MdMapsController extends Controller
                         foreach ($satuanData['biaya'] as $biayaData) {
                             if (isset($biayaData['name_biaya'], $biayaData['harga'])) {
                                 $biayaNameEntry = md_biaya_name::firstWhere('biaya_name', $biayaData['name_biaya']);
-                            
+
                                 if ($biayaNameEntry) {
                                     // Mencari entri md_biaya yang sudah ada dengan id_maps, id_satuan, dan name_biaya yang sama
                                     $existingBiaya = md_biaya::where('id_maps', $form->id)
                                         ->where('id_satuan', $satuan->id)
                                         ->where('name_biaya', $biayaNameEntry->id)
                                         ->first();
-                            
-                                    if (!$existingBiaya) {
+
+                                    if (! $existingBiaya) {
                                         // Jika entri md_biaya tidak ditemukan, buat entri baru
                                         $biaya = new md_biaya();
                                         $biaya->id_maps = $form->id;
@@ -220,7 +236,7 @@ class MdMapsController extends Controller
                 }
             }
         }
-        
+
         $form->notes = $request->notes;
         $form->save();
     }
@@ -232,6 +248,7 @@ class MdMapsController extends Controller
 
             if ($maps) {
                 $maps->delete();
+
                 return response()->json(['message' => 'Data deleted successfully'], 200);
             } else {
                 return response()->json(['error' => 'Data not found'], 404);
@@ -248,6 +265,7 @@ class MdMapsController extends Controller
 
             if ($maps) {
                 $maps->delete();
+
                 return response()->json(['message' => 'Data deleted successfully'], 200);
             } else {
                 return response()->json(['error' => 'Data not found'], 404);
@@ -255,6 +273,32 @@ class MdMapsController extends Controller
         } catch (\Exception $e) {
             return response()->json(['error' => 'Internal Server Error'], 500);
         }
+    }
+
+    public function geocode(Request $request)
+    {
+        $lat = $request->lat;
+        $lng = $request->lng;
+        $response = Http::get('https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=', [
+            'latlng' => "{$lat},{$lng}",
+            'key' => env('GOOGLE_MAPS_API_KEY'),
+        ]);
+
+        $data = $response->json();
+
+        if (! empty($data['results'])) {
+            $address = $data['results'][0]['formatted_address'];
+            // Hapus Plus Codes atau OLC dari alamat
+            $plusCodeIndex = strpos($address, '+');
+            if ($plusCodeIndex !== false) {
+                $endOfPlusCode = strpos($address, ' ', $plusCodeIndex);
+                $address = substr($address, $endOfPlusCode);
+            }
+
+            return response()->json(['address' => $address]);
+        }
+
+        return response()->json(['address' => null], 404);
     }
 
     /**

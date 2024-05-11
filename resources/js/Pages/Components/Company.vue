@@ -263,7 +263,9 @@ const columnsBiaya = [
             <div class="grid grid-cols-2 gap-6 mb-16">
                 <div class="border-dark-eval-2 border p-4 rounded-xl">
                     <div class="flex justify-between mb-8 items-center">
-                        <h1 class="font-semibold text-xl">Company List</h1>
+                        <h1 class="font-semibold text-xl">
+                            Company & Customer List
+                        </h1>
                         <button
                             class="btn border border-dark-eval-2"
                             onclick="company.showModal()"

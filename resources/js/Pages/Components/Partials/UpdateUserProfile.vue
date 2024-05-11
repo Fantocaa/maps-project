@@ -30,6 +30,9 @@ let form = useForm({
     id_view_name_company: ref(
         props.user.view_companies.map((vc) => vc.company.name_company)
     ),
+    id_view_name_customer: ref(
+        props.user.view_customers.map((vc) => vc.company.name_company)
+    ),
 });
 
 console.log(props.user);
@@ -172,6 +175,26 @@ onMounted(() => {
                 <InputError
                     class="mt-2"
                     :message="form.errors.id_view_name_company"
+                />
+            </div>
+
+            <div>
+                <Label for="view_customer" value="View Customer" />
+                <vSelect
+                    id="view_customer"
+                    v-model="form.id_view_name_customer"
+                    :options="companies"
+                    label="name_company"
+                    searchable="true"
+                    track-by="id"
+                    multiple
+                    requred
+                    placeholder="Select a company"
+                    class="border-gray-400 rounded-md focus:border-gray-400 focus:ring focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-white dark:border-gray-600 dark:bg-dark-eval-1 dark:text-gray-300 dark:focus:ring-offset-dark-eval-1 w-full bg-dark-eval-0"
+                />
+                <InputError
+                    class="mt-2"
+                    :message="form.errors.id_view_name_customer"
                 />
             </div>
 

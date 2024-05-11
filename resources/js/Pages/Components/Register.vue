@@ -38,6 +38,7 @@ const columns = [
     { data: "role", title: "Role" },
     { data: "company", title: "Company" },
     { data: "view_company", title: "View Company" },
+    { data: "view_customer", title: "View Customer" },
     {
         data: null,
         title: "Actions",
@@ -50,7 +51,7 @@ const columns = [
     },
 ];
 
-console.log(columns);
+// console.log(columns);
 </script>
 
 <style>

@@ -50,6 +50,8 @@ class User extends Authenticatable
         return $this->roles->pluck('name');
     }
 
+    // Company
+
     public function companies()
     {
         return $this->belongsToMany(Company::class, 'user_companies', 'user_id', 'company_id');
@@ -57,7 +59,7 @@ class User extends Authenticatable
 
     public function viewCompanies()
     {
-        return $this->hasMany(ViewCompany::class);
+        return $this->hasMany(view_company::class);
     }
 
     public function getCompanyNamesAttribute()
@@ -70,4 +72,25 @@ class User extends Authenticatable
         return $this->viewCompanies->pluck('name');
     }
 
+    // Customer
+
+    public function customer()
+    {
+        return $this->belongsToMany(Company::class, 'user_companies', 'user_id', 'customer_id');
+    }
+
+    public function viewCustomers()
+    {
+        return $this->hasMany(viewCustomer::class);
+    }
+
+    public function getCustomerNamesAttribute()
+    {
+        return $this->customers->pluck('name');
+    }
+
+    public function getViewCustomerNamesAttribute()
+    {
+        return $this->viewCustomers->pluck('name');
+    }
 }

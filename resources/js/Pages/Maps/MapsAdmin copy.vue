@@ -76,46 +76,34 @@ export default defineComponent({
             }
         };
 
-        // const getReverseGeocoding = (lat, lng) => {
-        //     return fetch(
-        //         `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=AIzaSyD2dASx5Zo68GSyZuPjUs-4SBLYGsn4OPQ`
-        //     )
-        //         .then((response) => response.json())
-        //         .then((data) => {
-        //             if (data.results && data.results.length > 0) {
-        //                 let address = data.results[0].formatted_address;
+        const getReverseGeocoding = (lat, lng) => {
+            return fetch(
+                `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=AIzaSyD2dASx5Zo68GSyZuPjUs-4SBLYGsn4OPQ`
+            )
+                .then((response) => response.json())
+                .then((data) => {
+                    if (data.results && data.results.length > 0) {
+                        let address = data.results[0].formatted_address;
 
-        //                 // Hapus Plus Codes atau OLC dari alamat
-        //                 const plusCodeIndex = address.indexOf("+");
-        //                 if (plusCodeIndex !== -1) {
-        //                     const endOfPlusCode = address.indexOf(
-        //                         " ",
-        //                         plusCodeIndex
-        //                     );
-        //                     address = address.slice(endOfPlusCode).trim();
-        //                 }
+                        // Hapus Plus Codes atau OLC dari alamat
+                        const plusCodeIndex = address.indexOf("+");
+                        if (plusCodeIndex !== -1) {
+                            const endOfPlusCode = address.indexOf(
+                                " ",
+                                plusCodeIndex
+                            );
+                            address = address.slice(endOfPlusCode).trim();
+                        }
 
-        //                 return address; // Kembalikan alamat
-        //             } else {
-        //                 return null; // Kembalikan null jika tidak ada hasil
-        //             }
-        //         })
-        //         .catch((error) => {
-        //             console.error(error);
-        //             return null; // Kembalikan null jika terjadi kesalahan
-        //         });
-        // };
-
-        const getReverseGeocoding = async (lat, lng) => {
-            try {
-                const response = await axios.get("/api/reverse-geocode", {
-                    params: { lat, lng },
+                        return address; // Kembalikan alamat
+                    } else {
+                        return null; // Kembalikan null jika tidak ada hasil
+                    }
+                })
+                .catch((error) => {
+                    console.error(error);
+                    return null; // Kembalikan null jika terjadi kesalahan
                 });
-                return response.data.address;
-            } catch (error) {
-                console.error(error);
-                return null;
-            }
         };
 
         const logout = () => {
@@ -680,8 +668,8 @@ export default defineComponent({
                 </GMapAutocomplete>
             </div>
         </div>
-        <!-- api-key="AIzaSyD2dASx5Zo68GSyZuPjUs-4SBLYGsn4OPQ" -->
         <GMapMap
+            api-key="AIzaSyD2dASx5Zo68GSyZuPjUs-4SBLYGsn4OPQ"
             id="google-map"
             class="w-full h-[75vh] lg:h-screen"
             :center="center"

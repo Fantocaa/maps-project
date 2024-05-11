@@ -1,28 +1,25 @@
 <?php
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
 
-class ViewCompany extends Model
+class viewCustomer extends Model
 {
     use HasFactory;
-    use SoftDeletes;
 
-    protected $table = 'view_companies';
-    protected $fillable = ['company_id'];
-    
+    protected $table = 'view_customers';
+
+    protected $fillable = ['customer_id'];
 
     public function company()
     {
-        return $this->belongsTo(Company::class);
+        return $this->belongsTo(Company::class, 'customer_id');
     }
 
     public function user()
     {
         return $this->belongsTo(User::class);
     }
-    
 }
-?>

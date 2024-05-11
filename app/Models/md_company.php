@@ -20,4 +20,15 @@ class md_company extends Model
     {
         return $this->belongsToMany(view_company::class, 'view_companies');
     }
+
+
+    public function customers()
+    {
+        return $this->belongsToMany(user_company::class, 'user_companies');
+    }
+
+    public function viewCustomers()
+    {
+        return $this->belongsToMany(viewCustomer::class, 'view_customers');
+    }
 }

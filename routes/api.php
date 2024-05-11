@@ -7,7 +7,6 @@ use App\Http\Controllers\MdCompanyController;
 use App\Http\Controllers\MdMapsController;
 use App\Http\Controllers\MdSatuanController;
 use App\Http\Controllers\UserCompanyController;
-use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -28,6 +27,8 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 Route::middleware([])->group(function () {
     Route::resource('maps', MdMapsController::class);
+
+    Route::get('/reverse-geocode', [MdMapsController::class, 'geocode']);
 
     Route::post('/maps/edit/{id}/', [MdMapsController::class, 'update_maps'])->name('update_form_maps');
 
